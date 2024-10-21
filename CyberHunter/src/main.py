@@ -38,3 +38,4 @@ while True:
         enemies.empty()
         score = 0  # Initialize score
         game_state = game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score)
+        
