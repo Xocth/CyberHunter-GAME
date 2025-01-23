@@ -335,6 +335,7 @@ class PowerUp(pygame.sprite.Sprite):
             self.kill()
 
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
+    original_stats = selected_character_data.copy()  # Save original stats
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
     all_sprites.add(player)
@@ -438,6 +439,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 print("Player died!")
                 player_name = game_over_screen(screen, font, score, selected_character_data["name"])
                 print(f"Player Name: {player_name}, Score: {score}, Character: {selected_character_data['name']}")
+                selected_character_data.update(original_stats)  # Reset stats to original
                 return score, 0  # Return score and game over
 
         # Check for player collisions with powerups
