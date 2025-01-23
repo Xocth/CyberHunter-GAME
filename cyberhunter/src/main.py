@@ -231,7 +231,7 @@ def game_over_screen(screen, font, score, character_name):
 
 def next_level_screen(screen, font, difficulty):
     screen.fill((0, 0, 0))
-    message_text = font.render("You have hit 500 score!", True, (255, 255, 255))
+    message_text = font.render("You successfully beat this stage!", True, (255, 255, 255))
     instruction_text = font.render("Answer these questions to proceed to the next level", True, (255, 255, 255))
     difficulty_text = font.render(f"Difficulty: {difficulty}", True, (255, 255, 255))
     continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
@@ -321,7 +321,7 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 return
 
-def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty):
+def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
     all_sprites.add(player)
@@ -378,12 +378,19 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             score += 10
             score_timer = current_time
 
-        if score >= 200: # Next level screen at selected score
+        if level == 1 and score >= 200:  # Next level screen at selected score for level 1
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
             quiz_result_screen(screen, font, quiz_score, score)
-            return
+            return score, 2  # Return score and next level
+
+        if level == 2 and score >= 1000:  # Next level screen at selected score for level 2
+            next_level_screen(screen, font, difficulty)
+            quiz_score = quiz_game(screen, font, difficulty)
+            score += quiz_score * 50  # Add 50 points for each correct answer
+            quiz_result_screen(screen, font, quiz_score, score)
+            return score, 3  # Return score and next level
 
         bullets.update()
         enemies.update()
@@ -411,7 +418,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 print("Player died!")
                 player_name = game_over_screen(screen, font, score, selected_character_data["name"])
                 print(f"Player Name: {player_name}, Score: {score}, Character: {selected_character_data['name']}")
-                return
+                return score, 0  # Return score and game over
 
         # Draw everything
         screen.blit(road_image, (0, road_y - SCREEN_HEIGHT))
@@ -441,9 +448,11 @@ pygame.display.set_caption('Cyber Hunter')
 # FPS and clock
 clock = pygame.time.Clock()
 
-# Load road image
+# Load road images
 road_image = pygame.image.load("cyberhunter/images/road.png")
 road_image = pygame.transform.scale(road_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+road_image2 = pygame.image.load("cyberhunter/images/road2.png")
+road_image2 = pygame.transform.scale(road_image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Fonts
 font = pygame.font.SysFont(None, 55)
@@ -461,10 +470,17 @@ while True:
     if game_state == "menu":
         selected_character, difficulty = menu_loop(screen, font, selected_character)
         game_state = "playing"
+        level = 1
+        score = 0  # Initialize score
     elif game_state == "playing":
         selected_character_data = characters[selected_character]
         all_sprites.empty()  # Clear sprites before starting a new game
         enemies.empty()
-        score = 0  # Initialize score
-        game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty)
-        game_state = "menu"
+        if level == 1:
+            score, next_level = game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+        elif level == 2:
+            score, next_level = game_loop(screen, road_image2, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+        if next_level == 0:
+            game_state = "menu"
+        else:
+            level = next_level
