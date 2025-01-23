@@ -3,19 +3,32 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 characters = [
-    {"name": "Daniel", "color": (0, 255, 0), "speed": 6, "strength": 7, "agility": 7, "image": "images/cars/daniel_car.png"},  # Green car
-    {"name": "Mo", "color": (128, 0, 128), "speed": 8, "strength": 6, "agility": 6, "image": "images/cars/mo_car.png"},   # Purple car
-    {"name": "Rene", "color": (0, 0, 255), "speed": 6, "strength": 8, "agility": 6, "image": "images/cars/rene_car.png"},   # Blue car
-    {"name": "Owen", "color": (255, 105, 180), "speed": 7, "strength": 7, "agility": 6, "image": "images/cars/owen_car.png"},  # Hot pink car
+    {"name": "Daniel", "color": (0, 255, 0), "speed": 6, "strength": 7, "agility": 7, "image": "cyberhunter/images/cars/daniel_car.png"},  # Green car
+    {"name": "Mo", "color": (128, 0, 128), "speed": 8, "strength": 6, "agility": 6, "image": "cyberhunter/images/cars/mo_car.png"},   # Purple car
+    {"name": "Rene", "color": (0, 0, 255), "speed": 6, "strength": 8, "agility": 6, "image": "cyberhunter/images/cars/rene_car.png"},   # Blue car
+    {"name": "Owen", "color": (255, 105, 180), "speed": 7, "strength": 7, "agility": 6, "image": "cyberhunter/images/cars/owen_car.png"},  # Hot pink car
 ]
 
 # enemy.py
 import pygame
+import sys
+
+# Initialize pygame
+pygame.init()
+
+# Initialize the mixer
+pygame.mixer.init()
+
+# Load the explosion sound
+explosion_sound = pygame.mixer.Sound("cyberhunter/audio/8bit_explosion.mp3")
+
+# Load the player hurt sound
+player_hurt_sound = pygame.mixer.Sound("cyberhunter/audio/playerhurt.mp3")
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         super().__init__()
-        self.image = pygame.image.load("images/cars/enemy.png")
+        self.image = pygame.image.load("cyberhunter/images/cars/enemy.png")
         self.image = pygame.transform.scale(self.image, (50, 100))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
@@ -30,6 +43,7 @@ class Enemy(pygame.sprite.Sprite):
         self.health -= damage
         if self.health <= 0:
             self.kill()
+            explosion_sound.play()  # Play the explosion sound
             return 20  # Points awarded for destroying the enemy
         return 0
 
@@ -54,11 +68,11 @@ def menu_loop(screen, font, selected_character):
     selected_difficulty = 1  # Default to "Normal"
 
     # Load menu background image
-    menu_background = pygame.image.load("images/menubkg.png")
+    menu_background = pygame.image.load("cyberhunter/images/menubkg.png")
     menu_background = pygame.transform.scale(menu_background, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Load and play menu music
-    pygame.mixer.music.load("audio/menumsc.ogg")
+    pygame.mixer.music.load("cyberhunter/audio/menumsc.ogg")
     pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
     while True:
@@ -161,6 +175,13 @@ class Player(pygame.sprite.Sprite):
         if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.rect.bottom < SCREEN_HEIGHT:
             self.rect.y += self.speed
 
+    def take_damage(self, damage):
+        self.health -= damage
+        print(f"Player took damage: {damage}, health left: {self.health}")  # Debug print
+        
+        if self.health <= 0:
+            self.kill()
+
 def game_over_screen(screen, font, score, character_name):
     screen.fill((0, 0, 0))
     game_over_text = font.render("Game Over", True, (255, 0, 0))
@@ -220,7 +241,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     enemy_spawn_interval = 2000  # Spawn an enemy every 2000 milliseconds
 
     # Load heart image for lives display
-    heart_image = pygame.image.load("images/heart.png")
+    heart_image = pygame.image.load("cyberhunter/images/heart.png")
     heart_image = pygame.transform.scale(heart_image, (30, 30))
 
     # Initial enemy spawn
@@ -282,6 +303,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         if hit_player:
             player.health -= 1
             print(f"Player hit! Health remaining: {player.health}")
+            player_hurt_sound.play()
             # Add effect for player hit (e.g., flash screen, sound effect)
             if player.health <= 0:
                 print("Player died!")
@@ -318,7 +340,7 @@ pygame.display.set_caption('Cyber Hunter')
 clock = pygame.time.Clock()
 
 # Load road image
-road_image = pygame.image.load("images/road.png")
+road_image = pygame.image.load("cyberhunter/images/road.png")
 road_image = pygame.transform.scale(road_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Fonts
