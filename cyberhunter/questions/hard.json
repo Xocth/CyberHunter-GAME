@@ -1,0 +1,32 @@
+[
+    {
+        "question": "What is two-factor authentication (2FA)?",
+        "options": [
+            "Using two passwords",
+            "A second step to confirm your identity",
+            "An advanced virus scanner",
+            "A way to back up files"
+        ],
+        "answer": "A second step to confirm your identity"
+    },
+    {
+        "question": "How can you tell if an email is a phishing attempt?",
+        "options": [
+            "It has spelling errors and asks for personal information",
+            "It comes from your friend",
+            "It has a funny joke in it",
+            "It contains only a link and no message"
+        ],
+        "answer": "It has spelling errors and asks for personal information"
+    },
+    {
+        "question": "Why shouldn't you use the same password everywhere?",
+        "options": [
+            "It's hard to remember",
+            "If one site is hacked, all accounts are at risk",
+            "It makes your computer slow",
+            "It costs money to change passwords"
+        ],
+        "answer": "If one site is hacked, all accounts are at risk"
+    }
+]

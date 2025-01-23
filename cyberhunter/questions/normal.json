@@ -1,0 +1,22 @@
+[
+    {
+        "question": "What is phishing?",
+        "options": ["A type of scam email", "A game you play online", "A secure website", "A way to send files"],
+        "answer": "A type of scam email"
+    },
+    {
+        "question": "What should you do before clicking a link?",
+        "options": ["Click it right away", "Check if it looks safe", "Ignore it", "Ask a friend to click it"],
+        "answer": "Check if it looks safe"
+    },
+    {
+        "question": "Why is it important to update your software?",
+        "options": [
+            "It makes your computer faster",
+            "It fixes security problems",
+            "It changes your wallpaper",
+            "It installs new games"
+        ],
+        "answer": "It fixes security problems"
+    }
+]

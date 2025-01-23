@@ -1,0 +1,17 @@
+[
+    {
+        "question": "What is a strong password?",
+        "options": ["123456", "mypassword", "P@ssw0rd123!", "password123"],
+        "answer": "P@ssw0rd123!"
+    },
+    {
+        "question": "What should you do if you get a message from someone you don't know?",
+        "options": ["Reply quickly", "Ignore it", "Tell a trusted adult", "Delete it immediately"],
+        "answer": "Tell a trusted adult"
+    },
+    {
+        "question": "What does 'https' mean in a website URL?",
+        "options": ["It's a secure website", "It's a gaming site", "It's a chat site", "It's a random website"],
+        "answer": "It's a secure website"
+    }
+]

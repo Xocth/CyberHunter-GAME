@@ -142,6 +142,8 @@ import pygame
 import sys
 import random
 from datetime import datetime
+import json
+import os
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, strength):
@@ -253,6 +255,49 @@ def next_level_screen(screen, font, difficulty):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 return
 
+def load_questions(difficulty):
+    base_path = os.path.dirname(__file__)
+    file_path = os.path.join(base_path, f"../questions/{difficulty.lower()}.json")
+    with open(file_path, "r") as file:
+        questions = json.load(file)
+    return questions
+
+def quiz_game(screen, font, difficulty):
+    questions = load_questions(difficulty)
+    random.shuffle(questions)
+    score = 0
+
+    for question in questions:
+        screen.fill((0, 0, 0))
+        question_text = font.render(question["question"], True, (255, 255, 255))
+        question_rect = question_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
+        screen.blit(question_text, question_rect)
+
+        options = question["options"]
+        correct_answer = question["answer"]
+
+        for i, option in enumerate(options):
+            option_text = font.render(f"{i + 1}. {option}", True, (255, 255, 255))
+            option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + i * 50))
+            screen.blit(option_text, option_rect)
+
+        pygame.display.flip()
+
+        answered = False
+        while not answered:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
+                        selected_option = event.key - pygame.K_1
+                        if options[selected_option] == correct_answer:
+                            score += 1
+                        answered = True
+
+    return score
+
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty):
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
@@ -264,7 +309,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullet_speed = 10
     bullet_strength = selected_character_data["strength"]
     bullets = pygame.sprite.Group()
-    enemy_spawn_interval = 2000  # Spawn an enemy every 2000 milliseconds
+    enemy_spawn_interval = 1000  # Spawn an enemy every 1000 milliseconds
 
     # Load heart image for lives display
     heart_image = pygame.image.load("cyberhunter/images/heart.png")
@@ -310,8 +355,10 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             score += 10
             score_timer = current_time
 
-        if score >= 500:
+        if score >= 200: # Next level screen at selected score
             next_level_screen(screen, font, difficulty)
+            quiz_score = quiz_game(screen, font, difficulty)
+            print(f"Quiz Score: {quiz_score}")
             return
 
         bullets.update()
