@@ -227,6 +227,9 @@ def game_over_screen(screen, font, score, character_name):
     with open("scores.txt", "a") as file:
         file.write(f"Name: {name}, Score: {score}, Character: {character_name}, Time: {current_time}\n")
 
+    # Print the time in the terminal
+    print(f"Game Over at: {current_time}")
+
     return name
 
 def next_level_screen(screen, font, difficulty):
