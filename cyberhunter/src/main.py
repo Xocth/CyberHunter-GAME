@@ -1,6 +1,6 @@
 # config.py
-SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 750
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 
 characters = [
     {"name": "Daniel", "color": (0, 255, 0), "speed": 6, "strength": 7, "agility": 7, "image": "cyberhunter/images/cars/daniel_car.png"},  # Green car
@@ -29,7 +29,7 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         super().__init__()
         self.image = pygame.image.load("cyberhunter/images/cars/enemy.png")
-        self.image = pygame.transform.scale(self.image, (50, 100))
+        self.image = pygame.transform.scale(self.image, (100, 150))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
         self.health = 20
@@ -162,7 +162,7 @@ class Bullet(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self, image, x, y, speed):
         super().__init__()
-        self.image = pygame.transform.scale(image, (50, 100))
+        self.image = pygame.transform.scale(image, (100, 150))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
         self.health = 3
@@ -284,6 +284,7 @@ def quiz_game(screen, font, difficulty):
         pygame.display.flip()
 
         answered = False
+        selected_option = None
         while not answered:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -292,9 +293,27 @@ def quiz_game(screen, font, difficulty):
                 elif event.type == pygame.KEYDOWN:
                     if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                         selected_option = event.key - pygame.K_1
-                        if options[selected_option] == correct_answer:
-                            score += 1
                         answered = True
+
+        if options[selected_option] == correct_answer:
+            score += 1
+        else:
+            # Highlight incorrect answer in red
+            option_text = font.render(f"{selected_option + 1}. {options[selected_option]}", True, (255, 0, 0))
+            option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + selected_option * 50))
+            screen.blit(option_text, option_rect)
+
+        # Highlight correct answer in green
+        correct_index = options.index(correct_answer)
+        option_text = font.render(f"{correct_index + 1}. {correct_answer}", True, (0, 255, 0))
+        option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + correct_index * 50))
+        screen.blit(option_text, option_rect)
+
+        pygame.display.flip()
+        pygame.time.wait(1000)  # Wait for a second
+
+        # Clear event queue to avoid input during the wait period
+        pygame.event.clear()
 
     return score
 
@@ -325,7 +344,7 @@ class PowerUp(pygame.sprite.Sprite):
     def __init__(self, x, y, powerup_type):
         super().__init__()
         self.image = pygame.image.load(f"cyberhunter/images/powerups/{powerup_type}.png")
-        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.image = pygame.transform.scale(self.image, (120, 120)) # powerup image size
         self.rect = self.image.get_rect(center=(x, y))
         self.powerup_type = powerup_type
 
@@ -347,15 +366,15 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullet_strength = selected_character_data["strength"]
     bullets = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
-    enemy_spawn_interval = 1000  # Spawn an enemy every 1000 milliseconds
+    enemy_spawn_interval = 2000  # Spawn an enemy every 1000 milliseconds
 
     # Load heart image for lives display
     heart_image = pygame.image.load("cyberhunter/images/heart.png")
-    heart_image = pygame.transform.scale(heart_image, (30, 30))
+    heart_image = pygame.transform.scale(heart_image, (35, 35))
 
     # Initial enemy spawn
-    for _ in range(5):  # Spawn 5 enemies at the start
-        enemy_x = random.randint(0, SCREEN_WIDTH - 50)
+    for _ in range(1):  # Spawn an enemy at the start
+        enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
         enemy = Enemy(enemy_x, -50, 5)
         enemies.add(enemy)
         all_sprites.add(enemy)
@@ -378,7 +397,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         # Spawn enemies
         current_time = pygame.time.get_ticks()
         if current_time - enemy_timer >= enemy_spawn_interval:
-            enemy_x = random.randint(0, SCREEN_WIDTH - 50)
+            enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
             enemy = Enemy(enemy_x, -50, 5)
             enemies.add(enemy)
             all_sprites.add(enemy)
@@ -393,14 +412,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             score += 10
             score_timer = current_time
 
-        if level == 1 and score >= 200:  # Next level screen at selected score for level 1
+        if level == 1 and score >= 500:  # Next level screen at selected score for level 1
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
             quiz_result_screen(screen, font, quiz_score, score)
             return score, 2  # Return score and next level
 
-        if level == 2 and score >= 1000:  # Next level screen at selected score for level 2
+        if level == 2 and score >= 1500:  # Next level screen at selected score for level 2
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
