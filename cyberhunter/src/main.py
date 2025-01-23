@@ -209,7 +209,7 @@ def game_over_screen(screen, font, score, character_name):
                     input_active = False
                 elif event.key == pygame.K_BACKSPACE:
                     name = name[:-1]
-                else:
+                elif len(name) < 15:
                     name += event.unicode
 
         screen.fill((0, 0, 0))
@@ -503,7 +503,7 @@ import pygame
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Cyber Hunter')
+pygame.display.set_caption('CyberHunter')
 
 # FPS and clock
 clock = pygame.time.Clock()
