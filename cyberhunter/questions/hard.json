@@ -1,5 +1,6 @@
 [
     {
+        "id": 1,
         "question": "What is two-factor authentication (2FA)?",
         "options": [
             "Using two passwords",
@@ -10,6 +11,7 @@
         "answer": "A second step to confirm your identity"
     },
     {
+        "id": 2,
         "question": "How can you tell if an email is a phishing attempt?",
         "options": [
             "It has spelling errors and asks for personal information",
@@ -20,6 +22,7 @@
         "answer": "It has spelling errors and asks for personal information"
     },
     {
+        "id": 3,
         "question": "Why shouldn't you use the same password everywhere?",
         "options": [
             "It's hard to remember",
@@ -28,5 +31,115 @@
             "It costs money to change passwords"
         ],
         "answer": "If one site is hacked, all accounts are at risk"
+    },
+    {
+        "id": 4,
+        "question": "What is a brute force attack?",
+        "options": [
+            "A method to crack passwords by trying all possible combinations",
+            "A virus that slows your computer",
+            "A firewall that blocks websites",
+            "A way to install malware"
+        ],
+        "answer": "A method to crack passwords by trying all possible combinations"
+    },
+    {
+        "id": 5,
+        "question": "What is a digital certificate?",
+        "options": [
+            "A document for identifying websites",
+            "A file that encrypts your passwords",
+            "A backup tool",
+            "A software update"
+        ],
+        "answer": "A document for identifying websites"
+    },
+    {
+        "id": 6,
+        "question": "What does the term 'zero-day' refer to?",
+        "options": [
+            "A vulnerability that has not been fixed yet",
+            "A day without internet",
+            "A type of firewall",
+            "A type of phishing attack"
+        ],
+        "answer": "A vulnerability that has not been fixed yet"
+    },
+    {
+        "id": 7,
+        "question": "What is social engineering?",
+        "options": [
+            "A type of engineering that builds social networks",
+            "Tricking people into giving away information",
+            "Designing secure websites",
+            "Encrypting data"
+        ],
+        "answer": "Tricking people into giving away information"
+    },
+    {
+        "id": 8,
+        "question": "What is the purpose of multi-factor authentication (MFA)?",
+        "options": [
+            "To make logging in faster",
+            "To provide extra security",
+            "To store passwords",
+            "To access Wi-Fi"
+        ],
+        "answer": "To provide extra security"
+    },
+    {
+        "id": 9,
+        "question": "What is ransomware?",
+        "options": [
+            "A type of malware that locks your data and demands payment",
+            "Software for managing passwords",
+            "A tool for encrypting files",
+            "A backup system"
+        ],
+        "answer": "A type of malware that locks your data and demands payment"
+    },
+    {
+        "id": 10,
+        "question": "Why is it important to review app permissions?",
+        "options": [
+            "To know how the app will use your data",
+            "To speed up your device",
+            "To update the app",
+            "To get more features"
+        ],
+        "answer": "To know how the app will use your data"
+    },
+    {
+        "id": 11,
+        "question": "What is the main function of an antivirus program?",
+        "options": [
+            "To delete old files",
+            "To detect and remove malicious software",
+            "To speed up your computer",
+            "To manage internet connections"
+        ],
+        "answer": "To detect and remove malicious software"
+    },
+    {
+        "id": 12,
+        "question": "What is a man-in-the-middle (MITM) attack?",
+        "options": [
+            "An attacker intercepts communication between two parties",
+            "A virus that spreads between devices",
+            "A scam email",
+            "A firewall blocking data"
+        ],
+        "answer": "An attacker intercepts communication between two parties"
+    },
+    {
+        "id": 13,
+        "question": "Why is it important to back up your data?",
+        "options": [
+            "To free up space on your device",
+            "To protect against data loss",
+            "To update your software",
+            "To share it with others"
+        ],
+        "answer": "To protect against data loss"
     }
 ]

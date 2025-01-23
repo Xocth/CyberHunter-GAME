@@ -1,15 +1,18 @@
 [
     {
+        "id": 1,
         "question": "What is phishing?",
         "options": ["A type of scam email", "A game you play online", "A secure website", "A way to send files"],
         "answer": "A type of scam email"
     },
     {
+        "id": 2,
         "question": "What should you do before clicking a link?",
         "options": ["Click it right away", "Check if it looks safe", "Ignore it", "Ask a friend to click it"],
         "answer": "Check if it looks safe"
     },
     {
+        "id": 3,
         "question": "Why is it important to update your software?",
         "options": [
             "It makes your computer faster",
@@ -18,5 +21,115 @@
             "It installs new games"
         ],
         "answer": "It fixes security problems"
+    },
+    {
+        "id": 4,
+        "question": "What is malware?",
+        "options": [
+            "A type of secure software",
+            "Harmful software like viruses",
+            "A tool for making websites",
+            "A type of computer game"
+        ],
+        "answer": "Harmful software like viruses"
+    },
+    {
+        "id": 5,
+        "question": "Why is it important to log out of public computers?",
+        "options": [
+            "To save electricity",
+            "To protect your account",
+            "To stop the computer",
+            "To close the browser"
+        ],
+        "answer": "To protect your account"
+    },
+    {
+        "id": 6,
+        "question": "What is a firewall?",
+        "options": [
+            "A type of password",
+            "A protective barrier for networks",
+            "A type of phishing attack",
+            "A setting in your browser"
+        ],
+        "answer": "A protective barrier for networks"
+    },
+    {
+        "id": 7,
+        "question": "What is encryption?",
+        "options": [
+            "Turning data into a secret code",
+            "A way to delete files",
+            "A type of scam",
+            "A way to connect to Wi-Fi"
+        ],
+        "answer": "Turning data into a secret code"
+    },
+    {
+        "id": 8,
+        "question": "What should you do if your friend sends you a suspicious link?",
+        "options": [
+            "Click it to check",
+            "Ignore it",
+            "Ask your friend about it",
+            "Report it"
+        ],
+        "answer": "Ask your friend about it"
+    },
+    {
+        "id": 9,
+        "question": "What does a VPN do?",
+        "options": [
+            "Helps you browse the internet safely",
+            "Makes your computer faster",
+            "Saves your passwords",
+            "Deletes malware"
+        ],
+        "answer": "Helps you browse the internet safely"
+    },
+    {
+        "id": 10,
+        "question": "What is spyware?",
+        "options": [
+            "Software that spies on you",
+            "A tool to protect your files",
+            "A type of firewall",
+            "An email scam"
+        ],
+        "answer": "Software that spies on you"
+    },
+    {
+        "id": 11,
+        "question": "Why should you avoid using public Wi-Fi for banking?",
+        "options": [
+            "It is too slow",
+            "It is not secure",
+            "It costs money",
+            "It blocks websites"
+        ],
+        "answer": "It is not secure"
+    },
+    {
+        "id": 12,
+        "question": "What does a scammer usually try to do?",
+        "options": [
+            "Help you fix your computer",
+            "Steal your personal information",
+            "Give you free software",
+            "Teach you about cybersecurity"
+        ],
+        "answer": "Steal your personal information"
+    },
+    {
+        "id": 13,
+        "question": "What is a phishing website?",
+        "options": [
+            "A fake website designed to steal information",
+            "A website about fish",
+            "A secure website",
+            "A website that sells software"
+        ],
+        "answer": "A fake website designed to steal information"
     }
 ]

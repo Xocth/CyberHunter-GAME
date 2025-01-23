@@ -1,17 +1,115 @@
 [
     {
+        "id": 1,
         "question": "What is a strong password?",
         "options": ["123456", "mypassword", "P@ssw0rd123!", "password123"],
         "answer": "P@ssw0rd123!"
     },
     {
+        "id": 2,
         "question": "What should you do if you get a message from someone you don't know?",
         "options": ["Reply quickly", "Ignore it", "Tell a trusted adult", "Delete it immediately"],
         "answer": "Tell a trusted adult"
     },
     {
+        "id": 3,
         "question": "What does 'https' mean in a website URL?",
         "options": ["It's a secure website", "It's a gaming site", "It's a chat site", "It's a random website"],
         "answer": "It's a secure website"
+    },
+    {
+        "id": 4,
+        "question": "What should you do if a pop-up says you've won a prize?",
+        "options": ["Click on it", "Ignore it", "Share it with friends", "Close it immediately"],
+        "answer": "Close it immediately"
+    },
+    {
+        "id": 5,
+        "question": "Which is the safest thing to share online?",
+        "options": ["Your full name", "Your favorite color", "Your home address", "Your school name"],
+        "answer": "Your favorite color"
+    },
+    {
+        "id": 6,
+        "question": "What should you do if a website asks for your password?",
+        "options": [
+            "Give it if the site looks real",
+            "Ask a parent or teacher first",
+            "Ignore it",
+            "Make up a fake password"
+        ],
+        "answer": "Ask a parent or teacher first"
+    },
+    {
+        "id": 7,
+        "question": "What is a computer virus?",
+        "options": [
+            "A type of software that causes harm",
+            "A game for computers",
+            "A strong password",
+            "A useful program"
+        ],
+        "answer": "A type of software that causes harm"
+    },
+    {
+        "id": 8,
+        "question": "What should you do if someone online is being mean to you?",
+        "options": [
+            "Ignore them",
+            "Be mean back",
+            "Tell a trusted adult",
+            "Keep chatting with them"
+        ],
+        "answer": "Tell a trusted adult"
+    },
+    {
+        "id": 9,
+        "question": "What does the padlock icon in the browser mean?",
+        "options": [
+            "The website is secure",
+            "The website is offline",
+            "The website is locked",
+            "You need a password"
+        ],
+        "answer": "The website is secure"
+    },
+    {
+        "id": 10,
+        "question": "What is the best way to protect your tablet or phone?",
+        "options": [
+            "Leave it unlocked",
+            "Use a PIN or password",
+            "Share it with friends",
+            "Turn it off"
+        ],
+        "answer": "Use a PIN or password"
+    },
+    {
+        "id": 11,
+        "question": "What is a username?",
+        "options": [
+            "Your real name",
+            "A name you create for online accounts",
+            "A website name",
+            "Your computer's name"
+        ],
+        "answer": "A name you create for online accounts"
+    },
+    {
+        "id": 12,
+        "question": "Who should you share your passwords with?",
+        "options": ["Your friends", "Your teacher", "Your family", "No one"],
+        "answer": "No one"
+    },
+    {
+        "id": 13,
+        "question": "What should you do if your computer gets very slow suddenly?",
+        "options": [
+            "Ignore it",
+            "Ask an adult to check for viruses",
+            "Turn it off and on again",
+            "Delete all your files"
+        ],
+        "answer": "Ask an adult to check for viruses"
     }
 ]

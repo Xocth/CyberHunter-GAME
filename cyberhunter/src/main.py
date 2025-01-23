@@ -1,6 +1,6 @@
 # config.py
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 750
 
 characters = [
     {"name": "Daniel", "color": (0, 255, 0), "speed": 6, "strength": 7, "agility": 7, "image": "cyberhunter/images/cars/daniel_car.png"},  # Green car
@@ -264,10 +264,10 @@ def load_questions(difficulty):
 
 def quiz_game(screen, font, difficulty):
     questions = load_questions(difficulty)
-    random.shuffle(questions)
+    selected_questions = random.sample(questions, 5)  # Select 5 random questions
     score = 0
 
-    for question in questions:
+    for question in selected_questions:
         screen.fill((0, 0, 0))
         question_text = font.render(question["question"], True, (255, 255, 255))
         question_rect = question_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
@@ -297,6 +297,29 @@ def quiz_game(screen, font, difficulty):
                         answered = True
 
     return score
+
+def quiz_result_screen(screen, font, correct_answers, current_score):
+    screen.fill((0, 0, 0))
+    result_text = font.render(f"You got {correct_answers} questions right!", True, (255, 255, 255))
+    score_text = font.render(f"Current Score: {current_score}", True, (255, 255, 255))
+    continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
+
+    result_rect = result_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+    score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+
+    screen.blit(result_text, result_rect)
+    screen.blit(score_text, score_rect)
+    screen.blit(continue_text, continue_rect)
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
 
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty):
     player_image = pygame.image.load(selected_character_data["image"])
@@ -358,7 +381,8 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         if score >= 200: # Next level screen at selected score
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
-            print(f"Quiz Score: {quiz_score}")
+            score += quiz_score * 50  # Add 50 points for each correct answer
+            quiz_result_screen(screen, font, quiz_score, score)
             return
 
         bullets.update()
