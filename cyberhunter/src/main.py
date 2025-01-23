@@ -227,7 +227,33 @@ def game_over_screen(screen, font, score, character_name):
 
     return name
 
-def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score):
+def next_level_screen(screen, font, difficulty):
+    screen.fill((0, 0, 0))
+    message_text = font.render("You have hit 500 score!", True, (255, 255, 255))
+    instruction_text = font.render("Answer these questions to proceed to the next level", True, (255, 255, 255))
+    difficulty_text = font.render(f"Difficulty: {difficulty}", True, (255, 255, 255))
+    continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
+
+    message_rect = message_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
+    instruction_rect = instruction_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+    difficulty_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100))
+
+    screen.blit(message_text, message_rect)
+    screen.blit(instruction_text, instruction_rect)
+    screen.blit(difficulty_text, difficulty_rect)
+    screen.blit(continue_text, continue_rect)
+    pygame.display.flip()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
+
+def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty):
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
     all_sprites.add(player)
@@ -283,6 +309,11 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         if current_time - score_timer >= 1000:
             score += 10
             score_timer = current_time
+
+        if score >= 500:
+            next_level_screen(screen, font, difficulty)
+            return
+
         bullets.update()
         enemies.update()
 
@@ -364,5 +395,5 @@ while True:
         all_sprites.empty()  # Clear sprites before starting a new game
         enemies.empty()
         score = 0  # Initialize score
-        game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score)
+        game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty)
         game_state = "menu"
