@@ -99,13 +99,13 @@ def menu_loop(screen, font, selected_character):
         stat_bar_height = 20
         stat_y_offset = 30
 
-        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset, stat_bar_width, stat_bar_height, character["speed"], max_stat_value, (0, 255, 0))
+        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset, stat_bar_width, stat_bar_height, character["speed"], max_stat_value, (0, 0, 255))
         draw_text(screen, "Speed", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset)
 
-        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 2, stat_bar_width, stat_bar_height, character["strength"], max_stat_value, (255, 0, 0))
+        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 2, stat_bar_width, stat_bar_height, character["strength"], max_stat_value, (0, 255, 0))
         draw_text(screen, "Strength", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 2)
 
-        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 3, stat_bar_width, stat_bar_height, character["agility"], max_stat_value, (0, 0, 255))
+        draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 3, stat_bar_width, stat_bar_height, character["agility"], max_stat_value, (255, 0, 0))
         draw_text(screen, "Agility", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 3)
 
         # Display difficulty setting
@@ -321,6 +321,19 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
                 return
 
+class PowerUp(pygame.sprite.Sprite):
+    def __init__(self, x, y, powerup_type):
+        super().__init__()
+        self.image = pygame.image.load(f"cyberhunter/images/powerups/{powerup_type}.png")
+        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.powerup_type = powerup_type
+
+    def update(self):
+        self.rect.y += 5
+        if self.rect.top > SCREEN_HEIGHT:
+            self.kill()
+
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
@@ -332,6 +345,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullet_speed = 10
     bullet_strength = selected_character_data["strength"]
     bullets = pygame.sprite.Group()
+    powerups = pygame.sprite.Group()
     enemy_spawn_interval = 1000  # Spawn an enemy every 1000 milliseconds
 
     # Load heart image for lives display
@@ -394,6 +408,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
 
         bullets.update()
         enemies.update()
+        powerups.update()
 
         # Check for collisions
         for bullet in bullets:
@@ -406,6 +421,11 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 if enemy.health <= 0:
                     print("Enemy died!")
                     enemy.kill()
+                    if random.random() < 0.4:  # 40% chance to drop a powerup
+                        powerup_type = random.choice(["speed", "strength", "agility"])
+                        powerup = PowerUp(enemy.rect.centerx, enemy.rect.centery, powerup_type)
+                        powerups.add(powerup)
+                        all_sprites.add(powerup)
 
         # Check for player collisions with enemies
         hit_player = pygame.sprite.spritecollide(player, enemies, True)
@@ -420,6 +440,17 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 print(f"Player Name: {player_name}, Score: {score}, Character: {selected_character_data['name']}")
                 return score, 0  # Return score and game over
 
+        # Check for player collisions with powerups
+        hit_powerups = pygame.sprite.spritecollide(player, powerups, True)
+        for powerup in hit_powerups:
+            if powerup.powerup_type == "speed":
+                selected_character_data["speed"] += 1
+            elif powerup.powerup_type == "strength":
+                selected_character_data["strength"] += 1
+            elif powerup.powerup_type == "agility":
+                selected_character_data["agility"] += 1
+            print(f"Powerup collected: {powerup.powerup_type}")
+
         # Draw everything
         screen.blit(road_image, (0, road_y - SCREEN_HEIGHT))
         screen.blit(road_image, (0, road_y))
@@ -432,6 +463,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         screen.blit(heart_image, (SCREEN_WIDTH - 120, 20))  # Moved to the left
         lives_text = font.render(f"x {player.health}", True, (255, 0, 0))
         screen.blit(lives_text, (SCREEN_WIDTH - 85, 20))  # Moved to the left
+
+        # Draw stats
+        stats_text = font.render(f"Speed: {selected_character_data['speed']}", True, (0, 0, 255))
+        screen.blit(stats_text, (10, 10))
+        stats_text = font.render(f"Strength: {selected_character_data['strength']}", True, (0, 255, 0))
+        screen.blit(stats_text, (10, 40))
+        stats_text = font.render(f"Agility: {selected_character_data['agility']}", True, (255, 0, 0))
+        screen.blit(stats_text, (10, 70))
 
         pygame.display.flip()
         clock.tick(60)
