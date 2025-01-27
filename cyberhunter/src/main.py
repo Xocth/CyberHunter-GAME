@@ -160,11 +160,13 @@ class Bullet(pygame.sprite.Sprite):
             self.kill()
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, speed):
+    def __init__(self, image, x, y, speed, strength, agility):
         super().__init__()
         self.image = pygame.transform.scale(image, (100, 150))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
+        self.strength = strength
+        self.agility = agility
         self.health = 3
 
     def update(self, keys):
@@ -183,6 +185,11 @@ class Player(pygame.sprite.Sprite):
         
         if self.health <= 0:
             self.kill()
+
+    def update_stats(self, speed, strength, agility):
+        self.speed = speed
+        self.strength = strength
+        self.agility = agility
 
 def game_over_screen(screen, font, score, character_name):
     screen.fill((0, 0, 0))
@@ -266,6 +273,10 @@ def load_questions(difficulty):
     return questions
 
 def quiz_game(screen, font, difficulty):
+    # Load quiz music
+    pygame.mixer.music.load("cyberhunter/audio/quiz.wav")
+    pygame.mixer.music.play(-1)  # Loop the music indefinitely
+
     questions = load_questions(difficulty)
     selected_questions = random.sample(questions, 5)  # Select 5 random questions
     score = 0
@@ -359,7 +370,7 @@ class PowerUp(pygame.sprite.Sprite):
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
     original_stats = selected_character_data.copy()  # Save original stats
     player_image = pygame.image.load(selected_character_data["image"])
-    player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"])
+    player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"], selected_character_data["strength"], selected_character_data["agility"])
     all_sprites.add(player)
     road_y = 0  # Initial position of the road
     score_timer = pygame.time.get_ticks()  # Timer to track score increment
@@ -369,11 +380,16 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullet_strength = selected_character_data["strength"]
     bullets = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
-    enemy_spawn_interval = 2000  # Spawn an enemy every 1000 milliseconds
+    enemy_spawn_interval = 2000  # Spawn an enemy every 2000 milliseconds
 
     # Load heart image for lives display
     heart_image = pygame.image.load("cyberhunter/images/heart.png")
     heart_image = pygame.transform.scale(heart_image, (35, 35))
+
+    # Load level 1 music
+    if level == 1:
+        pygame.mixer.music.load("cyberhunter/audio/lvl1.wav")
+        pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
     # Initial enemy spawn
     for _ in range(1):  # Spawn an enemy at the start
@@ -392,7 +408,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         if keys[pygame.K_SPACE]:
             current_time = pygame.time.get_ticks()
             if current_time - bullet_timer >= 200:
-                bullet = Bullet(player.rect.centerx, player.rect.top, bullet_speed, bullet_strength)
+                bullet = Bullet(player.rect.centerx, player.rect.top, bullet_speed, player.strength)
                 bullets.add(bullet)
                 all_sprites.add(bullet)
                 bullet_timer = current_time
@@ -427,7 +443,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
             quiz_result_screen(screen, font, quiz_score, score)
-            return score, 3  # Return score and next level
+            return score, 3  # Return score and next level (endless level)
 
         bullets.update()
         enemies.update()
@@ -474,6 +490,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             elif powerup.powerup_type == "agility":
                 selected_character_data["agility"] += 1
             print(f"Powerup collected: {powerup.powerup_type}")
+            player.update_stats(selected_character_data["speed"], selected_character_data["strength"], selected_character_data["agility"])
 
         # Draw everything
         screen.blit(road_image, (0, road_y - SCREEN_HEIGHT))
@@ -516,6 +533,8 @@ road_image = pygame.image.load("cyberhunter/images/road.png")
 road_image = pygame.transform.scale(road_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 road_image2 = pygame.image.load("cyberhunter/images/road2.png")
 road_image2 = pygame.transform.scale(road_image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
+road_image3 = pygame.image.load("cyberhunter/images/road3.png")  # Load road3.png for endless level
+road_image3 = pygame.transform.scale(road_image3, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Fonts
 font = pygame.font.SysFont(None, 55)
@@ -543,6 +562,8 @@ while True:
             score, next_level = game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
         elif level == 2:
             score, next_level = game_loop(screen, road_image2, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+        elif level == 3:
+            score, next_level = game_loop(screen, road_image3, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)  # Use road3.png for endless level
         if next_level == 0:
             game_state = "menu"
         else:
