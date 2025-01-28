@@ -75,6 +75,14 @@ def menu_loop(screen, font, selected_character):
     pygame.mixer.music.load("cyberhunter/audio/menumsc.ogg")
     pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
+    # Initialize joystick
+    joystick = None
+    if pygame.joystick.get_count() > 0:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+
+    last_axis_move_time = 0  # Track the last time the joystick axis was moved
+
     while True:
         screen.fill((0, 0, 0))
         
@@ -115,6 +123,8 @@ def menu_loop(screen, font, selected_character):
 
         pygame.display.flip()
 
+        current_time = pygame.time.get_ticks()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -124,10 +134,10 @@ def menu_loop(screen, font, selected_character):
                     selected_character = (selected_character - 1) % len(characters)
                 elif event.key == pygame.K_RIGHT:
                     selected_character = (selected_character + 1) % len(characters)
-                elif event.key == pygame.K_a:
+                elif event.key == pygame.K_UP:
                     selected_difficulty = (selected_difficulty - 1) % len(difficulties)
                     difficulty = difficulties[selected_difficulty]
-                elif event.key == pygame.K_d:
+                elif event.key == pygame.K_DOWN:
                     selected_difficulty = (selected_difficulty + 1) % len(difficulties)
                     difficulty = difficulties[selected_difficulty]
                 elif event.key == pygame.K_RETURN:
@@ -136,6 +146,18 @@ def menu_loop(screen, font, selected_character):
                 elif event.key == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
+
+        if joystick:
+            axis_y = joystick.get_axis(1)
+            if current_time - last_axis_move_time > 200:  # 200ms delay
+                if axis_y < -0.1:
+                    selected_difficulty = (selected_difficulty - 1) % len(difficulties)
+                    difficulty = difficulties[selected_difficulty]
+                    last_axis_move_time = current_time
+                elif axis_y > 0.1:
+                    selected_difficulty = (selected_difficulty + 1) % len(difficulties)
+                    difficulty = difficulties[selected_difficulty]
+                    last_axis_move_time = current_time
 
 # game.py
 import pygame
@@ -169,7 +191,7 @@ class Player(pygame.sprite.Sprite):
         self.agility = agility
         self.health = 3
 
-    def update(self, keys):
+    def update(self, keys, joystick=None):
         if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.rect.left > 0:
             self.rect.x -= self.speed
         if (keys[pygame.K_RIGHT] or keys[pygame.K_d]) and self.rect.right < SCREEN_WIDTH:
@@ -178,6 +200,18 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= self.speed
         if (keys[pygame.K_DOWN] or keys[pygame.K_s]) and self.rect.bottom < SCREEN_HEIGHT:
             self.rect.y += self.speed
+
+        if joystick:
+            axis_x = joystick.get_axis(0)
+            axis_y = joystick.get_axis(1)
+            if axis_x < -0.1 and self.rect.left > 0:
+                self.rect.x -= self.speed
+            if axis_x > 0.1 and self.rect.right < SCREEN_WIDTH:
+                self.rect.x += self.speed
+            if axis_y < -0.1 and self.rect.top > 0:
+                self.rect.y -= self.speed
+            if axis_y > 0.1 and self.rect.bottom < SCREEN_HEIGHT:
+                self.rect.y += self.speed
 
     def take_damage(self, damage):
         self.health -= damage
@@ -399,6 +433,12 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         pygame.mixer.music.load("cyberhunter/audio/lvl4.wav")
     pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
+    # Initialize joystick
+    joystick = None
+    if pygame.joystick.get_count() > 0:
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+
     # Initial enemy spawn
     for _ in range(1):  # Spawn an enemy at the start
         enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
@@ -418,8 +458,8 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 pygame.quit()
                 sys.exit()
         keys = pygame.key.get_pressed()
-        player.update(keys)
-        if keys[pygame.K_SPACE]:
+        player.update(keys, joystick)
+        if keys[pygame.K_SPACE] or (joystick and joystick.get_button(0)):
             current_time = pygame.time.get_ticks()
             if current_time - bullet_timer >= 200:
                 bullet = Bullet(player.rect.centerx, player.rect.top, bullet_speed, player.strength)
