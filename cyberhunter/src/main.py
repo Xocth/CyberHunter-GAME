@@ -251,7 +251,7 @@ class Player(pygame.sprite.Sprite):
         self.strength = strength
         self.agility = agility
 
-def game_over_screen(screen, font, score, character_name):
+def game_over_screen(screen, font, score, character_name, selected_character_data, original_stats):
     screen.fill((0, 0, 0))
     game_over_text = font.render("Game Over", True, (255, 0, 0))
     score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
@@ -303,6 +303,9 @@ def game_over_screen(screen, font, score, character_name):
 
     # Print the time in the terminal
     print(f"Game Over at: {current_time}")
+
+    # Reset character stats to original
+    selected_character_data.update(original_stats)
 
     return name
 
@@ -590,9 +593,8 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             # Add effect for player hit (e.g., flash screen, sound effect)
             if player.health <= 0:
                 print("Player died!")
-                player_name = game_over_screen(screen, font, score, selected_character_data["name"])
+                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
                 print(f"Player Name: {player_name}, Score: {score}, Character: {selected_character_data['name']}")
-                selected_character_data.update(original_stats)  # Reset stats to original
                 return score, 0  # Return score and game over
 
         # Check for player collisions with powerups
