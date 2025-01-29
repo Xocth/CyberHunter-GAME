@@ -34,6 +34,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
         self.health = health
+        self.max_health = health
 
     def update(self):
         self.rect.y += self.speed
@@ -47,6 +48,16 @@ class Enemy(pygame.sprite.Sprite):
             explosion_sound.play()  # Play the explosion sound
             return 20  # Points awarded for destroying the enemy
         return 0
+
+    def draw_health_bar(self, surface):
+        if self.health < self.max_health:
+            health_bar_width = self.rect.width
+            health_bar_height = 5
+            fill = (self.health / self.max_health) * health_bar_width
+            outline_rect = pygame.Rect(self.rect.left, self.rect.top - 10, health_bar_width, health_bar_height)
+            fill_rect = pygame.Rect(self.rect.left, self.rect.top - 10, fill, health_bar_height)
+            pygame.draw.rect(surface, (255, 0, 0), fill_rect)
+            pygame.draw.rect(surface, (255, 255, 255), outline_rect, 1)
 
 # menu.py
 import pygame
@@ -709,6 +720,10 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         screen.blit(stats_text, (10, 40))
         stats_text = font.render(f"Agility: {selected_character_data['agility']}", True, (255, 0, 0))
         screen.blit(stats_text, (10, 70))
+
+        # Draw enemy health bars
+        for enemy in enemies:
+            enemy.draw_health_bar(screen)
 
         pygame.display.flip()
         clock.tick(60)
