@@ -24,6 +24,7 @@ explosion_sound = pygame.mixer.Sound("cyberhunter/audio/8bit_explosion.mp3")
 
 # Load the player hurt sound
 player_hurt_sound = pygame.mixer.Sound("cyberhunter/audio/playerhurt.mp3")
+player_hurt_sound.set_volume(1.0)  # Set volume to maximum
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, health=20):
@@ -477,6 +478,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         pygame.mixer.music.load("cyberhunter/audio/lvl3.wav")
     elif level == 4:
         pygame.mixer.music.load("cyberhunter/audio/lvl4.wav")
+    pygame.mixer.music.set_volume(0.25)  # Set volume to quarter
     pygame.mixer.music.play(-1)  # Loop the music indefinitely
 
     # Initialize joystick
