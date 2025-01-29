@@ -166,8 +166,15 @@ def menu_loop(screen, font, selected_character):
                     sys.exit()
 
         if joystick:
+            axis_x = joystick.get_axis(0)
             axis_y = joystick.get_axis(1)
             if current_time - last_axis_move_time > 100:  # 100ms delay
+                if axis_x < -0.1:
+                    selected_character = (selected_character - 1) % len(characters)
+                    last_axis_move_time = current_time
+                elif axis_x > 0.1:
+                    selected_character = (selected_character + 1) % len(characters)
+                    last_axis_move_time = current_time
                 if axis_y < -0.1:
                     selected_difficulty = (selected_difficulty - 1) % len(difficulties)
                     difficulty = difficulties[selected_difficulty]
@@ -257,8 +264,11 @@ def game_over_screen(screen, font, score, character_name):
 
     name = ""
     input_active = True
+    button_delay = 500  # 500ms delay
+    last_button_press_time = 0
 
     while input_active:
+        current_time = pygame.time.get_ticks()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -271,7 +281,9 @@ def game_over_screen(screen, font, score, character_name):
                 elif len(name) < 15:
                     name += event.unicode
             elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
-                input_active = False
+                if current_time - last_button_press_time > button_delay:
+                    input_active = False
+                    last_button_press_time = current_time
 
         screen.fill((0, 0, 0))
         screen.blit(game_over_text, game_over_rect)
@@ -347,10 +359,12 @@ def quiz_game(screen, font, difficulty):
         correct_answer = question["answer"]
         colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0)]  # Blue, Green, Red, Yellow
 
+        option_rects = []
         for i, option in enumerate(options):
             option_text = font.render(f"{i + 1}. {option}", True, colors[i])
             option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + i * 50))
             screen.blit(option_text, option_rect)
+            option_rects.append(option_rect)
 
         pygame.display.flip()
 
@@ -372,17 +386,20 @@ def quiz_game(screen, font, difficulty):
 
         if options[selected_option] == correct_answer:
             score += 1
+            # Highlight correct answer with green background
+            pygame.draw.rect(screen, (0, 255, 0), (option_rects[selected_option].left - 10, option_rects[selected_option].top - 10, option_rects[selected_option].width + 20, option_rects[selected_option].height + 20))
         else:
-            # Highlight incorrect answer in red
-            option_text = font.render(f"{selected_option + 1}. {options[selected_option]}", True, (255, 0, 0))
-            option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + selected_option * 50))
-            screen.blit(option_text, option_rect)
+            # Highlight incorrect answer with red background
+            pygame.draw.rect(screen, (255, 0, 0), (option_rects[selected_option].left - 10, option_rects[selected_option].top - 10, option_rects[selected_option].width + 20, option_rects[selected_option].height + 20))
 
-        # Highlight correct answer in green
+        # Highlight correct answer with green background
         correct_index = options.index(correct_answer)
-        option_text = font.render(f"{correct_index + 1}. {correct_answer}", True, (0, 255, 0))
-        option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + correct_index * 50))
-        screen.blit(option_text, option_rect)
+        pygame.draw.rect(screen, (0, 255, 0), (option_rects[correct_index].left - 10, option_rects[correct_index].top - 10, option_rects[correct_index].width + 20, option_rects[correct_index].height + 20))
+
+        # Change text color to black for better readability
+        for i, option in enumerate(options):
+            option_text = font.render(f"{i + 1}. {option}", True, (0, 0, 0))
+            screen.blit(option_text, option_rects[i])
 
         pygame.display.flip()
         pygame.time.wait(1000)  # Wait for a second
