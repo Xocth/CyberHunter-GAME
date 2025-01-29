@@ -451,6 +451,16 @@ class PowerUp(pygame.sprite.Sprite):
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
+def reset_character_stats():
+    original_stats = [
+        {"name": "Daniel", "color": (0, 255, 0), "speed": 6, "strength": 7, "agility": 7, "image": "cyberhunter/images/cars/daniel_car.png"},
+        {"name": "Mo", "color": (128, 0, 128), "speed": 8, "strength": 6, "agility": 6, "image": "cyberhunter/images/cars/mo_car.png"},
+        {"name": "Rene", "color": (0, 0, 255), "speed": 6, "strength": 8, "agility": 6, "image": "cyberhunter/images/cars/rene_car.png"},
+        {"name": "Owen", "color": (255, 105, 180), "speed": 7, "strength": 7, "agility": 6, "image": "cyberhunter/images/cars/owen_car.png"}
+    ]
+    for i, character in enumerate(characters):
+        character.update(original_stats[i])
+
 def game_completed_screen(screen, font, score, character_name, selected_character_data, original_stats):
     screen.fill((0, 0, 0))
     completed_text = font.render("Game Completed!", True, (0, 255, 0))
@@ -505,7 +515,7 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
     print(f"Game Completed at: {current_time}")
 
     # Reset character stats to original
-    selected_character_data.update(original_stats)
+    reset_character_stats()
 
     return name
 
@@ -523,8 +533,12 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullets = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
     enemy_spawn_interval = 1500 if level == 1 else 2000  # Default spawn interval
-    if level == 3:
+    if level == 2:
+        enemy_spawn_interval = 2000  # Spawn interval for level 2
+    elif level == 3:
         enemy_spawn_interval = 2500  # Spawn interval for level 3
+    elif level == 4:
+        enemy_spawn_interval = 3000  # Spawn interval for level 4
 
     # Load heart image for lives display
     heart_image = pygame.image.load("cyberhunter/images/heart.png")
@@ -551,12 +565,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     # Initial enemy spawn
     for _ in range(1):  # Spawn an enemy at the start
         enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
-        if level == 2:
+        if level == 1:
+            enemy_health = 20
+        elif level == 2:
             enemy_health = 25
         elif level == 3:
             enemy_health = 30
-        else:
-            enemy_health = 20  # Default enemy health
+        elif level == 4:
+            enemy_health = 35
         enemy = Enemy(enemy_x, -50, 5, enemy_health)
         enemies.add(enemy)
         all_sprites.add(enemy)
@@ -580,12 +596,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         current_time = pygame.time.get_ticks()
         if current_time - enemy_timer >= enemy_spawn_interval:
             enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
-            if level == 2:
+            if level == 1:
+                enemy_health = 20
+            elif level == 2:
                 enemy_health = 25
             elif level == 3:
                 enemy_health = 30
-            else:
-                enemy_health = 20  # Default enemy health
+            elif level == 4:
+                enemy_health = 35
             enemy = Enemy(enemy_x, -50, 5, enemy_health)
             enemies.add(enemy)
             all_sprites.add(enemy)
@@ -733,6 +751,7 @@ enemies = pygame.sprite.Group()
 while True:
     if game_state == "menu":
         selected_character, difficulty = menu_loop(screen, font, selected_character)
+        reset_character_stats()  # Reset character stats when entering the game
         game_state = "playing"
         level = 1
         score = 0  # Initialize score
