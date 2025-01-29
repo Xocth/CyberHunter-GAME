@@ -451,6 +451,64 @@ class PowerUp(pygame.sprite.Sprite):
         if self.rect.top > SCREEN_HEIGHT:
             self.kill()
 
+def game_completed_screen(screen, font, score, character_name, selected_character_data, original_stats):
+    screen.fill((0, 0, 0))
+    completed_text = font.render("Game Completed!", True, (0, 255, 0))
+    score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
+    enter_name_text = font.render("Enter your name:", True, (255, 255, 255))
+    continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
+
+    completed_rect = completed_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
+    score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
+    enter_name_rect = enter_name_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+    continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100))
+
+    name = ""
+    input_active = True
+    button_delay = 500  # 500ms delay
+    last_button_press_time = 0
+
+    while input_active:
+        current_time = pygame.time.get_ticks()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    input_active = False
+                elif event.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+                elif len(name) < 15:
+                    name += event.unicode
+            elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
+                if current_time - last_button_press_time > button_delay:
+                    input_active = False
+                    last_button_press_time = current_time
+
+        screen.fill((0, 0, 0))
+        screen.blit(completed_text, completed_rect)
+        screen.blit(score_text, score_rect)
+        screen.blit(enter_name_text, enter_name_rect)
+        name_text = font.render(name, True, (255, 255, 255))
+        name_rect = name_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
+        screen.blit(name_text, name_rect)
+        screen.blit(continue_text, continue_rect)
+        pygame.display.flip()
+
+    # Save the name, score, current time, and character name to a file
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open("scores.txt", "a") as file:
+        file.write(f"Name: {name}, Score: {score}, Character: {character_name}, Time: {current_time}\n")
+
+    # Print the time in the terminal
+    print(f"Game Completed at: {current_time}")
+
+    # Reset character stats to original
+    selected_character_data.update(original_stats)
+
+    return name
+
 def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
     original_stats = selected_character_data.copy()  # Save original stats
     player_image = pygame.image.load(selected_character_data["image"])
@@ -549,19 +607,23 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             quiz_result_screen(screen, font, quiz_score, score)
             return score, 2  # Return score and next level
 
-        if level == 2 and score >= 1500:  # Next level screen at selected score for level 2
+        if level == 2 and score >= 1250:  # Next level screen at selected score for level 2
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
             quiz_result_screen(screen, font, quiz_score, score)
             return score, 3  # Return score and next level
 
-        if level == 3 and score >= 2500:  # Next level screen at selected score for level 3
+        if level == 3 and score >= 2000:  # Next level screen at selected score for level 3
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
             quiz_result_screen(screen, font, quiz_score, score)
-            return score, 4  # Return score and next level (endless level)
+            return score, 4  # Return score and next level
+
+        if level == 4 and score >= 2500:  # Game completed screen at selected score for level 4
+            game_completed_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
+            return score, 0  # Return score and game completed
 
         bullets.update()
         enemies.update()
@@ -652,7 +714,7 @@ road_image2 = pygame.image.load("cyberhunter/images/road2.png")
 road_image2 = pygame.transform.scale(road_image2, (SCREEN_WIDTH, SCREEN_HEIGHT))
 road_image3 = pygame.image.load("cyberhunter/images/road3.png")  
 road_image3 = pygame.transform.scale(road_image3, (SCREEN_WIDTH, SCREEN_HEIGHT))
-road_image4 = pygame.image.load("cyberhunter/images/road4.png")  # Load road4.png for endless level
+road_image4 = pygame.image.load("cyberhunter/images/road4.png")  # Load road4.png for level 4
 road_image4 = pygame.transform.scale(road_image4, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
