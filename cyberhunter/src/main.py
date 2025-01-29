@@ -118,7 +118,7 @@ def menu_loop(screen, font, selected_character):
 
         # Display difficulty setting
         draw_text(screen, "Question Difficulty: " + difficulty, font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 30)
-        draw_text(screen, "Press Enter to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
+        draw_text(screen, "Press RED to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
         draw_text(screen, "Press Esc to Exit", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 150)
 
         pygame.display.flip()
@@ -147,9 +147,27 @@ def menu_loop(screen, font, selected_character):
                     pygame.quit()
                     sys.exit()
 
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if event.button == 0:  # Button 1
+                    selected_character = (selected_character - 1) % len(characters)
+                elif event.button == 1:  # Button 2
+                    selected_character = (selected_character + 1) % len(characters)
+                elif event.button == 2:  # Button 3
+                    pygame.mixer.music.stop()  # Stop the music when starting the game
+                    return selected_character, difficulty
+                elif event.button == 3:  # Button 4
+                    selected_difficulty = (selected_difficulty + 1) % len(difficulties)
+                    difficulty = difficulties[selected_difficulty]
+                elif event.button == 7:  # Start button
+                    pygame.mixer.music.stop()  # Stop the music when starting the game
+                    return selected_character, difficulty
+                elif event.button == 6:  # Back button
+                    pygame.quit()
+                    sys.exit()
+
         if joystick:
             axis_y = joystick.get_axis(1)
-            if current_time - last_axis_move_time > 200:  # 200ms delay
+            if current_time - last_axis_move_time > 100:  # 100ms delay
                 if axis_y < -0.1:
                     selected_difficulty = (selected_difficulty - 1) % len(difficulties)
                     difficulty = difficulties[selected_difficulty]
@@ -230,7 +248,7 @@ def game_over_screen(screen, font, score, character_name):
     game_over_text = font.render("Game Over", True, (255, 0, 0))
     score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
     enter_name_text = font.render("Enter your name:", True, (255, 255, 255))
-    continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
+    continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
 
     game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
     score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
@@ -252,6 +270,8 @@ def game_over_screen(screen, font, score, character_name):
                     name = name[:-1]
                 elif len(name) < 15:
                     name += event.unicode
+            elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
+                input_active = False
 
         screen.fill((0, 0, 0))
         screen.blit(game_over_text, game_over_rect)
@@ -278,7 +298,7 @@ def next_level_screen(screen, font, difficulty):
     message_text = font.render("You successfully beat this stage!", True, (255, 255, 255))
     instruction_text = font.render("Answer these questions to proceed to the next level", True, (255, 255, 255))
     difficulty_text = font.render(f"Difficulty: {difficulty}", True, (255, 255, 255))
-    continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
+    continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
 
     message_rect = message_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
     instruction_rect = instruction_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
@@ -297,6 +317,8 @@ def next_level_screen(screen, font, difficulty):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
+            elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
                 return
 
 def load_questions(difficulty):
@@ -323,9 +345,10 @@ def quiz_game(screen, font, difficulty):
 
         options = question["options"]
         correct_answer = question["answer"]
+        colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0)]  # Blue, Green, Red, Yellow
 
         for i, option in enumerate(options):
-            option_text = font.render(f"{i + 1}. {option}", True, (255, 255, 255))
+            option_text = font.render(f"{i + 1}. {option}", True, colors[i])
             option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + i * 50))
             screen.blit(option_text, option_rect)
 
@@ -341,6 +364,10 @@ def quiz_game(screen, font, difficulty):
                 elif event.type == pygame.KEYDOWN:
                     if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4]:
                         selected_option = event.key - pygame.K_1
+                        answered = True
+                elif event.type == pygame.JOYBUTTONDOWN:
+                    if event.button in [0, 1, 2, 3]:  # Buttons 1-4
+                        selected_option = event.button
                         answered = True
 
         if options[selected_option] == correct_answer:
@@ -369,7 +396,7 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
     screen.fill((0, 0, 0))
     result_text = font.render(f"You got {correct_answers} questions right!", True, (255, 255, 255))
     score_text = font.render(f"Current Score: {current_score}", True, (255, 255, 255))
-    continue_text = font.render("Press Enter to Continue", True, (255, 255, 255))
+    continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
 
     result_rect = result_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
     score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
@@ -386,6 +413,8 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                return
+            elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
                 return
 
 class PowerUp(pygame.sprite.Sprite):
@@ -459,7 +488,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 sys.exit()
         keys = pygame.key.get_pressed()
         player.update(keys, joystick)
-        if keys[pygame.K_SPACE] or (joystick and joystick.get_button(0)):
+        if keys[pygame.K_SPACE] or (joystick and (joystick.get_button(0) or joystick.get_button(2))):  # Button 3 to shoot
             current_time = pygame.time.get_ticks()
             if current_time - bullet_timer >= 200:
                 bullet = Bullet(player.rect.centerx, player.rect.top, bullet_speed, player.strength)
