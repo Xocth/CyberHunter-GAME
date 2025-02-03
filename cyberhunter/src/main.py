@@ -170,7 +170,7 @@ def menu_loop(screen, font, selected_character):
                 elif event.button == 3:  # Button 4
                     selected_difficulty = (selected_difficulty + 1) % len(difficulties)
                     difficulty = difficulties[selected_difficulty]
-                elif event.button == 7:  # Start button
+                elif event.button == 8:  # Start button
                     pygame.mixer.music.stop()  # Stop the music when starting the game
                     return selected_character, difficulty
                 elif event.button == 6:  # Back button
