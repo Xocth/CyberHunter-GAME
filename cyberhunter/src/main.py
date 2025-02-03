@@ -130,7 +130,7 @@ def menu_loop(screen, font, selected_character):
 
         # Display difficulty setting
         draw_text(screen, "Question Difficulty: " + difficulty, font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 30)
-        draw_text(screen, "Press RED to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
+        draw_text(screen, "Press GREEN to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
         draw_text(screen, "Press Esc to Exit", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 150)
 
         pygame.display.flip()
@@ -160,11 +160,11 @@ def menu_loop(screen, font, selected_character):
                     sys.exit()
 
             elif event.type == pygame.JOYBUTTONDOWN:
-                if event.button == 0:  # Button 1
+                if event.button == 10:  # Button 1
                     selected_character = (selected_character - 1) % len(characters)
-                elif event.button == 1:  # Button 2
+                elif event.button == 9:  # Button 2
                     selected_character = (selected_character + 1) % len(characters)
-                elif event.button == 2:  # Button 3
+                elif event.button == 1:  # Button 3
                     pygame.mixer.music.stop()  # Stop the music when starting the game
                     return selected_character, difficulty
                 elif event.button == 3:  # Button 4
