@@ -226,7 +226,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = speed
         self.strength = strength
         self.agility = agility
-        self.health = 3
+        self.health = 5
 
     def update(self, keys, joystick=None):
         if (keys[pygame.K_LEFT] or keys[pygame.K_a]) and self.rect.left > 0:
@@ -667,7 +667,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 bullet.kill()
                 print(f"Enemy health after: {enemy.health}")
                 if enemy.health <= 0:
-                    print("Enemy died!")
+                    print("Enemy died Successfully!")
                     enemy.kill()
                     if random.random() < 0.4:  # 40% chance to drop a powerup
                         powerup_type = random.choice(["speed", "strength", "agility"])
@@ -764,6 +764,18 @@ enemies = pygame.sprite.Group()
 
 # Main loop
 while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F11:
+                fullscreen = not fullscreen
+                if fullscreen:
+                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+                else:
+                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                pygame.display.flip()  # Update the display mode
     if game_state == "menu":
         selected_character, difficulty = menu_loop(screen, font, selected_character)
         reset_character_stats()  # Reset character stats when entering the game
@@ -786,3 +798,5 @@ while True:
             game_state = "menu"
         else:
             level = next_level
+    pygame.display.flip()  # Ensure the display is updated every frame
+    clock.tick(60)  # Maintain the frame rate
