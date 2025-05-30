@@ -59,14 +59,83 @@ class Enemy(pygame.sprite.Sprite):
             pygame.draw.rect(surface, (255, 0, 0), fill_rect)
             pygame.draw.rect(surface, (255, 255, 255), outline_rect, 1)
 
+class EnemyBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, speed=7):
+        super().__init__()
+        self.image = pygame.Surface((8, 20))
+        self.image.fill((255, 255, 0))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = speed
+
+    def update(self):
+        self.rect.y += self.speed
+        if self.rect.top > SCREEN_HEIGHT:
+            self.kill()
+
+class Boss(Enemy):
+    def __init__(self, x, y):
+        super().__init__(x, y, speed=0, health=400)  # Increased health
+        self.image = pygame.image.load("cyberhunter/images/cars/boss.png")
+        self.image = pygame.transform.scale(self.image, (200, 250))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.max_health = self.health
+        self.shoot_delay = 1200  # milliseconds between shots
+        self.last_shot = pygame.time.get_ticks()
+        self.target_y = 60  # Higher position
+        self.move_direction = 1
+        self.move_speed = 2
+        self.left_bound = SCREEN_WIDTH // 4
+        self.right_bound = SCREEN_WIDTH * 3 // 4
+
+    def update(self):
+        # Move boss to target_y smoothly if not already there
+        if self.rect.y < self.target_y:
+            self.rect.y += 2
+            if self.rect.y > self.target_y:
+                self.rect.y = self.target_y
+        else:
+            # Move left and right within bounds
+            self.rect.x += self.move_direction * self.move_speed
+            if self.rect.right >= self.right_bound:
+                self.rect.right = self.right_bound
+                self.move_direction = -1
+            elif self.rect.left <= self.left_bound:
+                self.rect.left = self.left_bound
+                self.move_direction = 1
+
+    def try_shoot(self, enemy_bullets_group):
+        now = pygame.time.get_ticks()
+        if now - self.last_shot > self.shoot_delay:
+            bullet = EnemyBullet(self.rect.centerx, self.rect.bottom)
+            enemy_bullets_group.add(bullet)
+            self.last_shot = now
+
+    def draw_health_bar(self, surface):
+        bar_width = 600
+        bar_height = 30
+        x = (SCREEN_WIDTH - bar_width) // 2
+        y = 20
+        fill = int((self.health / self.max_health) * bar_width)
+        pygame.draw.rect(surface, (255, 0, 0), (x, y, fill, bar_height))
+        pygame.draw.rect(surface, (255, 255, 255), (x, y, bar_width, bar_height), 3)
+
 # menu.py
 import pygame
 import sys
 
-def draw_text(surface, text, font, color, x, y):
+def draw_text_with_outline(surface, text, font, color, x, y, outline_color=(0,0,0), outline_width=2):
+    """Draw text with an outline for better readability."""
     textobj = font.render(text, True, color)
     textrect = textobj.get_rect()
     textrect.topleft = (x, y)
+    # Draw outline by rendering text in outline_color around the main text
+    for dx in range(-outline_width, outline_width+1):
+        for dy in range(-outline_width, outline_width+1):
+            if dx != 0 or dy != 0:
+                outline_text = font.render(text, True, outline_color)
+                outline_rect = outline_text.get_rect()
+                outline_rect.topleft = (x + dx, y + dy)
+                surface.blit(outline_text, outline_rect)
     surface.blit(textobj, textrect)
 
 def draw_stat_bar(surface, x, y, width, height, value, max_value, color):
@@ -106,12 +175,12 @@ def menu_loop(screen, font, selected_character):
         bottom_y = SCREEN_HEIGHT - 250
 
         # Display "Character :" label
-        draw_text(screen, "Character :", font, (255, 255, 255), center_x - 150, bottom_y)
+        draw_text_with_outline(screen, "Character :", font, (255, 255, 255), center_x - 150, bottom_y)
         
         # Display selected character
         character = characters[selected_character]
         color = character["color"]
-        draw_text(screen, character["name"], font, color, center_x + 100, bottom_y)
+        draw_text_with_outline(screen, character["name"], font, color, center_x + 100, bottom_y)
 
         # Display character stats
         max_stat_value = 10  # Assuming max value for any stat is 10
@@ -120,18 +189,18 @@ def menu_loop(screen, font, selected_character):
         stat_y_offset = 30
 
         draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset, stat_bar_width, stat_bar_height, character["speed"], max_stat_value, (0, 0, 255))
-        draw_text(screen, "Speed", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset)
+        draw_text_with_outline(screen, "Speed", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset)
 
         draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 2, stat_bar_width, stat_bar_height, character["strength"], max_stat_value, (0, 255, 0))
-        draw_text(screen, "Strength", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 2)
+        draw_text_with_outline(screen, "Strength", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 2)
 
         draw_stat_bar(screen, center_x - 150, bottom_y + stat_y_offset * 3, stat_bar_width, stat_bar_height, character["agility"], max_stat_value, (255, 0, 0))
-        draw_text(screen, "Agility", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 3)
+        draw_text_with_outline(screen, "Agility", font, (255, 255, 255), center_x - 150 + stat_bar_width + 10, bottom_y + stat_y_offset * 3)
 
         # Display difficulty setting
-        draw_text(screen, "Question Difficulty: " + difficulty, font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 30)
-        draw_text(screen, "Press GREEN to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
-        draw_text(screen, "Press Esc to Exit", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 150)
+        draw_text_with_outline(screen, "Question Difficulty: " + difficulty, font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 30)
+        draw_text_with_outline(screen, "Press GREEN to Start", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 90)
+        draw_text_with_outline(screen, "Press Esc to Exit", font, (255, 255, 255), center_x - 150, bottom_y + stat_y_offset * 4 + 150)
 
         pygame.display.flip()
 
@@ -264,6 +333,7 @@ class Player(pygame.sprite.Sprite):
 
 def game_over_screen(screen, font, score, character_name, selected_character_data, original_stats):
     screen.fill((0, 0, 0))
+    # Use draw_text_with_outline for all text
     game_over_text = font.render("Game Over", True, (255, 0, 0))
     score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
     enter_name_text = font.render("Enter your name:", True, (255, 255, 255))
@@ -298,13 +368,13 @@ def game_over_screen(screen, font, score, character_name, selected_character_dat
                     last_button_press_time = current_time
 
         screen.fill((0, 0, 0))
-        screen.blit(game_over_text, game_over_rect)
-        screen.blit(score_text, score_rect)
-        screen.blit(enter_name_text, enter_name_rect)
+        draw_text_with_outline(screen, "Game Over", font, (255, 0, 0), game_over_rect.left, game_over_rect.top)
+        draw_text_with_outline(screen, f"Final Score: {score}", font, (255, 255, 255), score_rect.left, score_rect.top)
+        draw_text_with_outline(screen, "Enter your name:", font, (255, 255, 255), enter_name_rect.left, enter_name_rect.top)
         name_text = font.render(name, True, (255, 255, 255))
         name_rect = name_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
-        screen.blit(name_text, name_rect)
-        screen.blit(continue_text, continue_rect)
+        draw_text_with_outline(screen, name, font, (255, 255, 255), name_rect.left, name_rect.top)
+        draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
         pygame.display.flip()
 
     # Save the name, score, current time, and character name to a file
@@ -322,6 +392,7 @@ def game_over_screen(screen, font, score, character_name, selected_character_dat
 
 def next_level_screen(screen, font, difficulty):
     screen.fill((0, 0, 0))
+    # Use draw_text_with_outline for all text
     message_text = font.render("You successfully beat this stage!", True, (255, 255, 255))
     instruction_text = font.render("Answer these questions to proceed to the next level", True, (255, 255, 255))
     difficulty_text = font.render(f"Difficulty: {difficulty}", True, (255, 255, 255))
@@ -332,10 +403,10 @@ def next_level_screen(screen, font, difficulty):
     difficulty_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100))
 
-    screen.blit(message_text, message_rect)
-    screen.blit(instruction_text, instruction_rect)
-    screen.blit(difficulty_text, difficulty_rect)
-    screen.blit(continue_text, continue_rect)
+    draw_text_with_outline(screen, "You successfully beat this stage!", font, (255, 255, 255), message_rect.left, message_rect.top)
+    draw_text_with_outline(screen, "Answer these questions to proceed to the next level", font, (255, 255, 255), instruction_rect.left, instruction_rect.top)
+    draw_text_with_outline(screen, f"Difficulty: {difficulty}", font, (255, 255, 255), difficulty_rect.left, difficulty_rect.top)
+    draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
     pygame.display.flip()
 
     while True:
@@ -368,7 +439,8 @@ def quiz_game(screen, font, difficulty):
         screen.fill((0, 0, 0))
         question_text = font.render(question["question"], True, (255, 255, 255))
         question_rect = question_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
-        screen.blit(question_text, question_rect)
+        # Draw question with outline
+        draw_text_with_outline(screen, question["question"], font, (255, 255, 255), question_rect.left, question_rect.top)
 
         options = question["options"]
         correct_answer = question["answer"]
@@ -378,7 +450,8 @@ def quiz_game(screen, font, difficulty):
         for i, option in enumerate(options):
             option_text = font.render(f"{i + 1}. {option}", True, colors[i])
             option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + i * 50))
-            screen.blit(option_text, option_rect)
+            # Draw option with outline
+            draw_text_with_outline(screen, f"{i + 1}. {option}", font, colors[i], option_rect.left, option_rect.top)
             option_rects.append(option_rect)
 
         pygame.display.flip()
@@ -406,22 +479,13 @@ def quiz_game(screen, font, difficulty):
         else:
             # Highlight incorrect answer with red background
             pygame.draw.rect(screen, (255, 0, 0), (option_rects[selected_option].left - 10, option_rects[selected_option].top - 10, option_rects[selected_option].width + 20, option_rects[selected_option].height + 20))
-
-        # Highlight correct answer with green background
         correct_index = options.index(correct_answer)
         pygame.draw.rect(screen, (0, 255, 0), (option_rects[correct_index].left - 10, option_rects[correct_index].top - 10, option_rects[correct_index].width + 20, option_rects[correct_index].height + 20))
-
-        # Change text color to black for better readability
         for i, option in enumerate(options):
-            option_text = font.render(f"{i + 1}. {option}", True, (0, 0, 0))
-            screen.blit(option_text, option_rects[i])
-
+            draw_text_with_outline(screen, f"{i + 1}. {option}", font, (0, 0, 0), option_rects[i].left, option_rects[i].top)
         pygame.display.flip()
-        pygame.time.wait(1000)  # Wait for a second
-
-        # Clear event queue to avoid input during the wait period
+        pygame.time.wait(1000)
         pygame.event.clear()
-
     return score
 
 def quiz_result_screen(screen, font, correct_answers, current_score):
@@ -434,9 +498,9 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
     score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
     continue_rect = continue_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
 
-    screen.blit(result_text, result_rect)
-    screen.blit(score_text, score_rect)
-    screen.blit(continue_text, continue_rect)
+    draw_text_with_outline(screen, f"You got {correct_answers} questions right!", font, (255, 255, 255), result_rect.left, result_rect.top)
+    draw_text_with_outline(screen, f"Current Score: {current_score}", font, (255, 255, 255), score_rect.left, score_rect.top)
+    draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
     pygame.display.flip()
 
     while True:
@@ -508,13 +572,11 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
                     last_button_press_time = current_time
 
         screen.fill((0, 0, 0))
-        screen.blit(completed_text, completed_rect)
-        screen.blit(score_text, score_rect)
-        screen.blit(enter_name_text, enter_name_rect)
-        name_text = font.render(name, True, (255, 255, 255))
-        name_rect = name_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
-        screen.blit(name_text, name_rect)
-        screen.blit(continue_text, continue_rect)
+        draw_text_with_outline(screen, "Game Completed!", font, (0, 255, 0), completed_rect.left, completed_rect.top)
+        draw_text_with_outline(screen, f"Final Score: {score}", font, (255, 255, 255), score_rect.left, score_rect.top)
+        draw_text_with_outline(screen, "Enter your name:", font, (255, 255, 255), enter_name_rect.left, enter_name_rect.top)
+        draw_text_with_outline(screen, name, font, (255, 255, 255), SCREEN_WIDTH // 2 - font.size(name)[0] // 2, SCREEN_HEIGHT // 2 + 50)
+        draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
         pygame.display.flip()
 
     # Save the name, score, current time, and character name to a file
@@ -543,6 +605,7 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     bullet_strength = selected_character_data["strength"]
     bullets = pygame.sprite.Group()
     powerups = pygame.sprite.Group()
+    enemy_bullets = pygame.sprite.Group()  # Add this line
     enemy_spawn_interval = 1500 if level == 1 else 2000  # Default spawn interval
     if level == 2:
         enemy_spawn_interval = 2000  # Spawn interval for level 2
@@ -588,6 +651,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         enemies.add(enemy)
         all_sprites.add(enemy)
 
+    boss_spawned = False
+    boss_defeated = False
+    boss = None
+
+    # Add these lines
+    boss_warning_shown = False
+    boss_warning_time = 0
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -603,27 +674,60 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 all_sprites.add(bullet)
                 bullet_timer = current_time
 
-        # Spawn enemies
+        # Spawn enemies (skip if boss is spawned in level 4)
         current_time = pygame.time.get_ticks()
-        if current_time - enemy_timer >= enemy_spawn_interval:
-            enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
-            if level == 1:
-                enemy_health = 20
-            elif level == 2:
-                enemy_health = 25
-            elif level == 3:
-                enemy_health = 30
-            elif level == 4:
-                enemy_health = 35
-            enemy = Enemy(enemy_x, -50, 5, enemy_health)
-            enemies.add(enemy)
-            all_sprites.add(enemy)
-            enemy_timer = current_time
+        if level == 4 and score >= 2500 and not boss_spawned:
+            if not boss_warning_shown:
+                boss_warning_time = pygame.time.get_ticks()
+                boss_warning_shown = True
+                continue  # Skip the rest of the loop to show the warning
+            elif pygame.time.get_ticks() - boss_warning_time < 2000:
+                # Flashy, chaotic warning
+                elapsed = pygame.time.get_ticks() - boss_warning_time
+                colors = [(255,0,0), (255,255,0), (255,0,255), (0,255,255), (255,255,255)]
+                color = random.choice(colors)
+                shake_x = random.randint(-30, 30)
+                shake_y = random.randint(-30, 30)
+                warning_font = arcade_font
+                warning_text = warning_font.render("!!! WARNING !!!", True, color)
+                warning_rect = warning_text.get_rect(center=(SCREEN_WIDTH // 2 + shake_x, SCREEN_HEIGHT // 2 - 20 + shake_y))
+                screen.fill((0,0,0))
+                screen.blit(warning_text, warning_rect)
+                # Add a second line for extra chaos
+                warning_text2 = warning_font.render("BOSS INCOMING!", True, random.choice(colors))
+                warning_rect2 = warning_text2.get_rect(center=(SCREEN_WIDTH // 2 + random.randint(-30,30), SCREEN_HEIGHT // 2 + 20 + random.randint(-30,30)))
+                screen.blit(warning_text2, warning_rect2)
+                pygame.display.flip()
+                continue
+            else:
+                # After warning, spawn the boss
+                boss = Boss(SCREEN_WIDTH // 2, -125)
+                enemies.add(boss)
+                all_sprites.add(boss)
+                boss_spawned = True
+
+        if not (level == 4 and boss_spawned):
+            if current_time - enemy_timer >= enemy_spawn_interval:
+                enemy_x = random.randint(SCREEN_WIDTH // 4, 3 * SCREEN_WIDTH // 4)
+                if level == 1:
+                    enemy_health = 20
+                elif level == 2:
+                    enemy_health = 25
+                elif level == 3:
+                    enemy_health = 30
+                elif level == 4:
+                    enemy_health = 35
+                enemy = Enemy(enemy_x, -50, 5, enemy_health)
+                enemies.add(enemy)
+                all_sprites.add(enemy)
+                enemy_timer = current_time
 
         # Update positions
+        # Always move the road, even during boss fight
         road_y += player.speed
         if road_y >= SCREEN_HEIGHT:
             road_y = 0
+
         current_time = pygame.time.get_ticks()
         if current_time - score_timer >= 1000:
             score += 10
@@ -650,13 +754,14 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             quiz_result_screen(screen, font, quiz_score, score)
             return score, 4  # Return score and next level
 
-        if level == 4 and score >= 2500:  # Game completed screen at selected score for level 4
-            game_completed_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
-            return score, 0  # Return score and game completed
-
         bullets.update()
         enemies.update()
         powerups.update()
+        enemy_bullets.update()  # Update boss bullets
+
+        # Boss fires bullets
+        if boss_spawned and boss in enemies:
+            boss.try_shoot(enemy_bullets)
 
         # Check for collisions
         for bullet in bullets:
@@ -700,30 +805,45 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             print(f"Powerup collected: {powerup.powerup_type}")
             player.update_stats(selected_character_data["speed"], selected_character_data["strength"], selected_character_data["agility"])
 
+        # Check for collisions between player and boss bullets
+        if pygame.sprite.spritecollide(player, enemy_bullets, True):
+            player.health -= 1
+            player_hurt_sound.play()
+            if player.health <= 0:
+                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
+                return score, 0
+
         # Draw everything
         screen.blit(road_image, (0, road_y - SCREEN_HEIGHT))
         screen.blit(road_image, (0, road_y))
         all_sprites.draw(screen)
+        enemy_bullets.draw(screen)  # Draw boss bullets
+
+        # Define score_rect before using it
         score_text = font.render(f"Score: {score}", True, (255, 255, 255))
         score_rect = score_text.get_rect(center=(SCREEN_WIDTH // 2, 30))
-        screen.blit(score_text, score_rect)
+        draw_text_with_outline(screen, f"Score: {score}", font, (255, 255, 255), score_rect.left, score_rect.top)
 
         # Draw heart and lives count
         screen.blit(heart_image, (SCREEN_WIDTH - 120, 20))  # Moved to the left
-        lives_text = font.render(f"x {player.health}", True, (255, 0, 0))
-        screen.blit(lives_text, (SCREEN_WIDTH - 85, 20))  # Moved to the left
+        draw_text_with_outline(screen, f"x {player.health}", font, (255, 0, 0), SCREEN_WIDTH - 85, 20)  # Moved to the left
 
         # Draw stats
-        stats_text = font.render(f"Speed: {selected_character_data['speed']}", True, (0, 0, 255))
-        screen.blit(stats_text, (10, 10))
-        stats_text = font.render(f"Strength: {selected_character_data['strength']}", True, (0, 255, 0))
-        screen.blit(stats_text, (10, 40))
-        stats_text = font.render(f"Agility: {selected_character_data['agility']}", True, (255, 0, 0))
-        screen.blit(stats_text, (10, 70))
+        draw_text_with_outline(screen, f"Speed: {selected_character_data['speed']}", font, (0, 0, 255), 10, 10)
+        draw_text_with_outline(screen, f"Strength: {selected_character_data['strength']}", font, (0, 255, 0), 10, 40)
+        draw_text_with_outline(screen, f"Agility: {selected_character_data['agility']}", font, (255, 0, 0), 10, 70)
 
         # Draw enemy health bars
         for enemy in enemies:
-            enemy.draw_health_bar(screen)
+            if isinstance(enemy, Boss):
+                enemy.draw_health_bar(screen)
+            else:
+                enemy.draw_health_bar(screen)
+
+        # Boss defeat check (add this after all updates and collision checks)
+        if level == 4 and boss_spawned and boss not in enemies:
+            game_completed_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
+            return score, 0  # Game completed
 
         pygame.display.flip()
         clock.tick(60)
@@ -752,7 +872,11 @@ road_image4 = pygame.transform.scale(road_image4, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 
 # Fonts
-font = pygame.font.SysFont(None, 55)
+arcade_font = pygame.font.Font("cyberhunter/fonts/PressStart2P.ttf", 22)
+font = arcade_font  # Use this everywhere instead of SysFont or None
+
+# For smaller text, you can use:
+arcade_font_small = pygame.font.Font("cyberhunter/fonts/PressStart2P.ttf", 12)
 
 # Game loop variables
 game_state = "menu"
