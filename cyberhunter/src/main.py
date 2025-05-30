@@ -659,11 +659,26 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
     boss_warning_shown = False
     boss_warning_time = 0
 
+    paused = False  # Add paused state
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    paused = not paused  # Toggle pause
+
+        if paused:
+            # Draw paused overlay
+            pause_text = font.render("Paused", True, (255, 255, 0))
+            pause_rect = pause_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            screen.blit(pause_text, pause_rect)
+            pygame.display.flip()
+            clock.tick(10)  # Lower FPS while paused
+            continue  # Skip game logic updates
+
         keys = pygame.key.get_pressed()
         player.update(keys, joystick)
         if keys[pygame.K_SPACE] or (joystick and (joystick.get_button(0) or joystick.get_button(2))):  # Button 3 to shoot
