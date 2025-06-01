@@ -332,11 +332,13 @@ class Player(pygame.sprite.Sprite):
         self.strength = strength
         self.agility = agility
 
-def game_over_screen(screen, font, score, character_name, selected_character_data, original_stats):
+def game_over_screen(screen, font, score, character_name, selected_character_data, original_stats, quiz_score_total=0):
     screen.fill((0, 0, 0))
+    # Add quiz_score_total to score
+    final_score = score + quiz_score_total
     # Use draw_text_with_outline for all text
     game_over_text = font.render("Game Over", True, (255, 0, 0))
-    score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
+    score_text = font.render(f"Final Score: {final_score}", True, (255, 255, 255))
     enter_name_text = font.render("Enter your name:", True, (255, 255, 255))
     continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
 
@@ -361,7 +363,8 @@ def game_over_screen(screen, font, score, character_name, selected_character_dat
                     input_active = False
                 elif event.key == pygame.K_BACKSPACE:
                     name = name[:-1]
-                elif len(name) < 15:
+                # Only add printable characters to the name
+                elif len(name) < 15 and event.unicode and event.unicode.isprintable():
                     name += event.unicode
             elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
                 if current_time - last_button_press_time > button_delay:
@@ -370,7 +373,7 @@ def game_over_screen(screen, font, score, character_name, selected_character_dat
 
         screen.fill((0, 0, 0))
         draw_text_with_outline(screen, "Game Over", font, (255, 0, 0), game_over_rect.left, game_over_rect.top)
-        draw_text_with_outline(screen, f"Final Score: {score}", font, (255, 255, 255), score_rect.left, score_rect.top)
+        draw_text_with_outline(screen, f"Final Score: {final_score}", font, (255, 255, 255), score_rect.left, score_rect.top)
         draw_text_with_outline(screen, "Enter your name:", font, (255, 255, 255), enter_name_rect.left, enter_name_rect.top)
         name_text = font.render(name, True, (255, 255, 255))
         name_rect = name_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 50))
@@ -381,7 +384,7 @@ def game_over_screen(screen, font, score, character_name, selected_character_dat
     # Save the name, score, current time, and character name to a file
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("scores.txt", "a") as file:
-        file.write(f"Name: {name}, Score: {score}, Character: {character_name}, Time: {current_time}\n")
+        file.write(f"Name: {name}, Score: {final_score}, Character: {character_name}, Time: {current_time}\n")
 
     # Print the time in the terminal
     print(f"Game Over at: {current_time}")
@@ -559,10 +562,12 @@ def reset_character_stats():
     for i, character in enumerate(characters):
         character.update(original_stats[i])
 
-def game_completed_screen(screen, font, score, character_name, selected_character_data, original_stats):
+def game_completed_screen(screen, font, score, character_name, selected_character_data, original_stats, quiz_score_total=0):
     screen.fill((0, 0, 0))
+    # Add quiz_score_total to score
+    final_score = score + quiz_score_total
     completed_text = font.render("Game Completed!", True, (0, 255, 0))
-    score_text = font.render(f"Final Score: {score}", True, (255, 255, 255))
+    score_text = font.render(f"Final Score: {final_score}", True, (255, 255, 255))
     enter_name_text = font.render("Enter your name:", True, (255, 255, 255))
     continue_text = font.render("Press RED to Continue", True, (255, 255, 255))
 
@@ -587,7 +592,8 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
                     input_active = False
                 elif event.key == pygame.K_BACKSPACE:
                     name = name[:-1]
-                elif len(name) < 15:
+                # Only add printable characters to the name
+                elif len(name) < 15 and event.unicode and event.unicode.isprintable():
                     name += event.unicode
             elif event.type == pygame.JOYBUTTONDOWN and event.button == 2:  # Button 2 to continue
                 if current_time - last_button_press_time > button_delay:
@@ -596,7 +602,7 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
 
         screen.fill((0, 0, 0))
         draw_text_with_outline(screen, "Game Completed!", font, (0, 255, 0), completed_rect.left, completed_rect.top)
-        draw_text_with_outline(screen, f"Final Score: {score}", font, (255, 255, 255), score_rect.left, score_rect.top)
+        draw_text_with_outline(screen, f"Final Score: {final_score}", font, (255, 255, 255), score_rect.left, score_rect.top)
         draw_text_with_outline(screen, "Enter your name:", font, (255, 255, 255), enter_name_rect.left, enter_name_rect.top)
         draw_text_with_outline(screen, name, font, (255, 255, 255), SCREEN_WIDTH // 2 - font.size(name)[0] // 2, SCREEN_HEIGHT // 2 + 50)
         draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
@@ -605,7 +611,7 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
     # Save the name, score, current time, and character name to a file
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     with open("scores.txt", "a") as file:
-        file.write(f"Name: {name}, Score: {score}, Character: {character_name}, Time: {current_time}\n")
+        file.write(f"Name: {name}, Score: {final_score}, Character: {character_name}, Time: {current_time}\n")
 
     # Print the time in the terminal
     print(f"Game Completed at: {current_time}")
@@ -615,7 +621,7 @@ def game_completed_screen(screen, font, score, character_name, selected_characte
 
     return name
 
-def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1):
+def game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level=1, quiz_score_total=0):
     original_stats = selected_character_data.copy()  # Save original stats
     player_image = pygame.image.load(selected_character_data["image"])
     player = Player(player_image, SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100, selected_character_data["speed"], selected_character_data["strength"], selected_character_data["agility"])
@@ -729,12 +735,16 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 shake_x = int(math.sin(t) * shake_amount)
                 shake_y = int(math.cos(t) * shake_amount)
                 warning_text = warning_font.render("!!! WARNING !!!", True, (255, 255, 0))  # Bright yellow
-                warning_rect = warning_text.get_rect(center=(SCREEN_WIDTH // 2 + shake_x, SCREEN_HEIGHT // 2 - 20 + shake_y))
+                warning_rect = warning_text.get_rect(center=(SCREEN_WIDTH // 2 + shake_x, SCREEN_HEIGHT // 2 - 40 + shake_y))
                 screen.fill((0,0,0))
                 screen.blit(warning_text, warning_rect)
                 warning_text2 = warning_font.render("BOSS INCOMING!", True, (255, 255, 0))
-                warning_rect2 = warning_text2.get_rect(center=(SCREEN_WIDTH // 2 - shake_x, SCREEN_HEIGHT // 2 + 20 - shake_y))
+                warning_rect2 = warning_text2.get_rect(center=(SCREEN_WIDTH // 2 - shake_x, SCREEN_HEIGHT // 2 + shake_y))
                 screen.blit(warning_text2, warning_rect2)
+                # Add "Avoid the bullets!" message below
+                warning_text3 = warning_font.render("Avoid the bullets!", True, (255, 255, 0))
+                warning_rect3 = warning_text3.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 60))
+                screen.blit(warning_text3, warning_rect3)
                 pygame.display.flip()
                 continue
             else:
@@ -774,29 +784,32 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
         if level == 1 and score >= 500:  # Next level screen at selected score for level 1
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
-            score += quiz_score * 50  # Add 50 points for each correct answer
+            # score += quiz_score * 50  # REMOVE THIS LINE
+            quiz_score_total += quiz_score * 50  # Accumulate quiz score
             # Mini lore for after level 1 quiz
             lore = "Night falls over the city...\nBut the VIRUS Team's forces multiply in the shadows."
             quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
-            return score, 2  # Return score and next level
+            return score, 2, quiz_score_total  # Return quiz_score_total as well
 
         if level == 2 and score >= 1250:  # Next level screen at selected score for level 2
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
-            score += quiz_score * 50  # Add 50 points for each correct answer
+            # score += quiz_score * 50
+            quiz_score_total += quiz_score * 50
             # Mini lore for after level 2 quiz
             lore = "The city grows tense as you press on...\nThe VIRUS Team's grip tightens, but hope remains."
             quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
-            return score, 3  # Return score and next level
+            return score, 3, quiz_score_total
 
         if level == 3 and score >= 2000:  # Next level screen at selected score for level 3
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
-            score += quiz_score * 50  # Add 50 points for each correct answer
+            # score += quiz_score * 50
+            quiz_score_total += quiz_score * 50
             # Mini lore for after level 3 quiz
             lore = "You approach the heart of the city...\nThe entrance to the VIRUS Team's lair looms ahead.\nTheir boss awaits your challenge."
             quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
-            return score, 4  # Return score and next level
+            return score, 4, quiz_score_total
 
         bullets.update()
         enemies.update()
@@ -833,9 +846,9 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             # Add effect for player hit (e.g., flash screen, sound effect)
             if player.health <= 0:
                 print("Player died!")
-                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
+                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats, quiz_score_total)
                 print(f"Player Name: {player_name}, Score: {score}, Character: {selected_character_data['name']}")
-                return score, 0  # Return score and game over
+                return score, 0, quiz_score_total  # Return quiz_score_total
 
         # Check for player collisions with powerups
         hit_powerups = pygame.sprite.spritecollide(player, powerups, True)
@@ -854,8 +867,8 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             player.health -= 1
             player_hurt_sound.play()
             if player.health <= 0:
-                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
-                return score, 0
+                player_name = game_over_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats, quiz_score_total)
+                return score, 0, quiz_score_total
 
         # Draw everything
         screen.blit(road_image, (0, road_y - SCREEN_HEIGHT))
@@ -886,8 +899,8 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
 
         # Boss defeat check (add this after all updates and collision checks)
         if level == 4 and boss_spawned and boss not in enemies:
-            game_completed_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats)
-            return score, 0  # Game completed
+            game_completed_screen(screen, font, score, selected_character_data["name"], selected_character_data, original_stats, quiz_score_total)
+            return score, 0, quiz_score_total  # Game completed
 
         pygame.display.flip()
         clock.tick(60)
@@ -931,6 +944,7 @@ all_sprites = pygame.sprite.Group()
 enemies = pygame.sprite.Group()
 
 # Main loop
+quiz_score_total = 0  # Track quiz score across levels
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -950,18 +964,19 @@ while True:
         game_state = "playing"
         level = 1
         score = 0  # Initialize score
+        quiz_score_total = 0  # Reset quiz score at new game
     elif game_state == "playing":
         selected_character_data = characters[selected_character]
         all_sprites.empty()  # Clear sprites before starting a new game
         enemies.empty()
         if level == 1:
-            score, next_level = game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+            score, next_level, quiz_score_total = game_loop(screen, road_image, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level, quiz_score_total)
         elif level == 2:
-            score, next_level = game_loop(screen, road_image2, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+            score, next_level, quiz_score_total = game_loop(screen, road_image2, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level, quiz_score_total)
         elif level == 3:
-            score, next_level = game_loop(screen, road_image3, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+            score, next_level, quiz_score_total = game_loop(screen, road_image3, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level, quiz_score_total)
         elif level == 4:
-            score, next_level = game_loop(screen, road_image4, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level)
+            score, next_level, quiz_score_total = game_loop(screen, road_image4, selected_character_data, all_sprites, enemies, clock, font, SCREEN_WIDTH, SCREEN_HEIGHT, score, difficulty, level, quiz_score_total)
         if next_level == 0:
             game_state = "menu"
         else:
