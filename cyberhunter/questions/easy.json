@@ -166,5 +166,115 @@
             "Write your passwords on your desk"
         ],
         "answer": "Change your passwords regularly"
+    },
+    {
+        "id": 19,
+        "question": "What should you do if you forget your password?",
+        "options": [
+            "Try to guess many times",
+            "Use the 'forgot password' option",
+            "Ask a friend for their password",
+            "Stop using the account"
+        ],
+        "answer": "Use the 'forgot password' option"
+    },
+    {
+        "id": 20,
+        "question": "Why should you not share your location online?",
+        "options": [
+            "It can help strangers find you",
+            "It makes your device slow",
+            "It uses more battery",
+            "It is not interesting"
+        ],
+        "answer": "It can help strangers find you"
+    },
+    {
+        "id": 21,
+        "question": "What is the best way to check if a website is safe?",
+        "options": [
+            "Look for 'https' and a padlock icon",
+            "See if it loads quickly",
+            "Check if it has lots of pictures",
+            "Ask your friends"
+        ],
+        "answer": "Look for 'https' and a padlock icon"
+    },
+    {
+        "id": 22,
+        "question": "What should you do if someone asks for your personal information online?",
+        "options": [
+            "Give it to them",
+            "Ask a trusted adult before sharing",
+            "Share only your name",
+            "Ignore the question"
+        ],
+        "answer": "Ask a trusted adult before sharing"
+    },
+    {
+        "id": 23,
+        "question": "Why is it important to use a screen lock on your device?",
+        "options": [
+            "To keep your information private",
+            "To make your device look cool",
+            "To save battery",
+            "To get more apps"
+        ],
+        "answer": "To keep your information private"
+    },
+    {
+        "id": 24,
+        "question": "What should you do if you see a suspicious link in a message?",
+        "options": [
+            "Click it to see what happens",
+            "Show it to a trusted adult before clicking",
+            "Forward it to your friends",
+            "Ignore all messages"
+        ],
+        "answer": "Show it to a trusted adult before clicking"
+    },
+    {
+        "id": 25,
+        "question": "Why is it important to keep your software updated?",
+        "options": [
+            "To get the latest games",
+            "To fix security problems and bugs",
+            "To make your device heavier",
+            "To use more battery"
+        ],
+        "answer": "To fix security problems and bugs"
+    },
+    {
+        "id": 26,
+        "question": "What is personal information?",
+        "options": [
+            "Your favorite food",
+            "Your name, address, and phone number",
+            "A cartoon character",
+            "A type of computer"
+        ],
+        "answer": "Your name, address, and phone number"
+    },
+    {
+        "id": 27,
+        "question": "What should you do if someone online offers you free gifts?",
+        "options": [
+            "Give them your information",
+            "Ask a trusted adult before accepting",
+            "Accept right away",
+            "Send them money"
+        ],
+        "answer": "Ask a trusted adult before accepting"
+    },
+    {
+        "id": 28,
+        "question": "Why should you not use your real name as your username?",
+        "options": [
+            "It is too long",
+            "It can make it easier for strangers to find you",
+            "It is hard to spell",
+            "Websites don't allow it"
+        ],
+        "answer": "It can make it easier for strangers to find you"
     }
 ]
