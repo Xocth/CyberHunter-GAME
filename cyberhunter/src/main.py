@@ -63,7 +63,8 @@ class EnemyBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, speed=7):
         super().__init__()
         self.image = pygame.Surface((8, 20))
-        self.image.fill((255, 255, 0))
+        # Change bullet color to bright yellow
+        self.image.fill((255, 255, 102))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = speed
 
@@ -437,20 +438,35 @@ def quiz_game(screen, font, difficulty):
 
     for question in selected_questions:
         screen.fill((0, 0, 0))
-        question_text = font.render(question["question"], True, (255, 255, 255))
-        question_rect = question_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 100))
-        # Draw question with outline
-        draw_text_with_outline(screen, question["question"], font, (255, 255, 255), question_rect.left, question_rect.top)
+        # --- Split question into two lines and position higher ---
+        q_text = question["question"]
+        words = q_text.split()
+        if len(words) > 6:
+            mid = len(words) // 2
+            line1 = " ".join(words[:mid])
+            line2 = " ".join(words[mid:])
+        else:
+            line1 = q_text
+            line2 = ""
+        # Position higher on the screen
+        y_base = SCREEN_HEIGHT // 2 - 170
+        line_spacing = 40
+        line1_rect = font.render(line1, True, (255, 255, 255)).get_rect(center=(SCREEN_WIDTH // 2, y_base))
+        draw_text_with_outline(screen, line1, font, (255, 255, 255), line1_rect.left, line1_rect.top)
+        if line2:
+            line2_rect = font.render(line2, True, (255, 255, 255)).get_rect(center=(SCREEN_WIDTH // 2, y_base + line_spacing))
+            draw_text_with_outline(screen, line2, font, (255, 255, 255), line2_rect.left, line2_rect.top)
 
         options = question["options"]
         correct_answer = question["answer"]
         colors = [(0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 0)]  # Blue, Green, Red, Yellow
 
         option_rects = []
+        # Lower the options further down the screen
+        options_start_y = y_base + 130  # Increased from 70 to 130
         for i, option in enumerate(options):
             option_text = font.render(f"{i + 1}. {option}", True, colors[i])
-            option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50 + i * 50))
-            # Draw option with outline
+            option_rect = option_text.get_rect(center=(SCREEN_WIDTH // 2, options_start_y + i * 50))
             draw_text_with_outline(screen, f"{i + 1}. {option}", font, colors[i], option_rect.left, option_rect.top)
             option_rects.append(option_rect)
 
@@ -474,10 +490,8 @@ def quiz_game(screen, font, difficulty):
 
         if options[selected_option] == correct_answer:
             score += 1
-            # Highlight correct answer with green background
             pygame.draw.rect(screen, (0, 255, 0), (option_rects[selected_option].left - 10, option_rects[selected_option].top - 10, option_rects[selected_option].width + 20, option_rects[selected_option].height + 20))
         else:
-            # Highlight incorrect answer with red background
             pygame.draw.rect(screen, (255, 0, 0), (option_rects[selected_option].left - 10, option_rects[selected_option].top - 10, option_rects[selected_option].width + 20, option_rects[selected_option].height + 20))
         correct_index = options.index(correct_answer)
         pygame.draw.rect(screen, (0, 255, 0), (option_rects[correct_index].left - 10, option_rects[correct_index].top - 10, option_rects[correct_index].width + 20, option_rects[correct_index].height + 20))
@@ -488,7 +502,7 @@ def quiz_game(screen, font, difficulty):
         pygame.event.clear()
     return score
 
-def quiz_result_screen(screen, font, correct_answers, current_score):
+def quiz_result_screen(screen, font, correct_answers, current_score, lore_text=None):
     screen.fill((0, 0, 0))
     result_text = font.render(f"You got {correct_answers} questions right!", True, (255, 255, 255))
     score_text = font.render(f"Current Score: {current_score}", True, (255, 255, 255))
@@ -501,6 +515,15 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
     draw_text_with_outline(screen, f"You got {correct_answers} questions right!", font, (255, 255, 255), result_rect.left, result_rect.top)
     draw_text_with_outline(screen, f"Current Score: {current_score}", font, (255, 255, 255), score_rect.left, score_rect.top)
     draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
+
+    # Draw lore text if provided
+    if lore_text:
+        lore_lines = lore_text.split('\n')
+        for i, line in enumerate(lore_lines):
+            lore_render = font.render(line, True, (255, 255, 0))
+            lore_rect = lore_render.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120 + i * 40))
+            draw_text_with_outline(screen, line, font, (255, 255, 0), lore_rect.left, lore_rect.top)
+
     pygame.display.flip()
 
     while True:
@@ -697,20 +720,20 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
                 boss_warning_shown = True
                 continue  # Skip the rest of the loop to show the warning
             elif pygame.time.get_ticks() - boss_warning_time < 2000:
-                # Flashy, chaotic warning
-                elapsed = pygame.time.get_ticks() - boss_warning_time
-                colors = [(255,0,0), (255,255,0), (255,0,255), (0,255,255), (255,255,255)]
-                color = random.choice(colors)
-                shake_x = random.randint(-30, 30)
-                shake_y = random.randint(-30, 30)
+                # Make warning less chaotic: single color, slow shake, centered
                 warning_font = arcade_font
-                warning_text = warning_font.render("!!! WARNING !!!", True, color)
+                shake_amount = 8
+                # Slow shake using sine wave based on time
+                import math
+                t = pygame.time.get_ticks() / 200.0
+                shake_x = int(math.sin(t) * shake_amount)
+                shake_y = int(math.cos(t) * shake_amount)
+                warning_text = warning_font.render("!!! WARNING !!!", True, (255, 255, 0))  # Bright yellow
                 warning_rect = warning_text.get_rect(center=(SCREEN_WIDTH // 2 + shake_x, SCREEN_HEIGHT // 2 - 20 + shake_y))
                 screen.fill((0,0,0))
                 screen.blit(warning_text, warning_rect)
-                # Add a second line for extra chaos
-                warning_text2 = warning_font.render("BOSS INCOMING!", True, random.choice(colors))
-                warning_rect2 = warning_text2.get_rect(center=(SCREEN_WIDTH // 2 + random.randint(-30,30), SCREEN_HEIGHT // 2 + 20 + random.randint(-30,30)))
+                warning_text2 = warning_font.render("BOSS INCOMING!", True, (255, 255, 0))
+                warning_rect2 = warning_text2.get_rect(center=(SCREEN_WIDTH // 2 - shake_x, SCREEN_HEIGHT // 2 + 20 - shake_y))
                 screen.blit(warning_text2, warning_rect2)
                 pygame.display.flip()
                 continue
@@ -752,21 +775,27 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 1 quiz
+            lore = "Night falls over the city...\nBut the VIRUS Team's forces multiply in the shadows."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 2  # Return score and next level
 
         if level == 2 and score >= 1250:  # Next level screen at selected score for level 2
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 2 quiz
+            lore = "The city grows tense as you press on...\nThe VIRUS Team's grip tightens, but hope remains."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 3  # Return score and next level
 
         if level == 3 and score >= 2000:  # Next level screen at selected score for level 3
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 3 quiz
+            lore = "You approach the heart of the city...\nThe entrance to the VIRUS Team's lair looms ahead.\nTheir boss awaits your challenge."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 4  # Return score and next level
 
         bullets.update()

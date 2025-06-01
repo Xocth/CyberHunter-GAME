@@ -131,5 +131,60 @@
             "A website that sells software"
         ],
         "answer": "A fake website designed to steal information"
+    },
+    {
+        "id": 14,
+        "question": "What should you do if you receive an unexpected email attachment?",
+        "options": [
+            "Open it immediately",
+            "Scan it with antivirus software or ask the sender",
+            "Forward it to friends",
+            "Ignore your email"
+        ],
+        "answer": "Scan it with antivirus software or ask the sender"
+    },
+    {
+        "id": 15,
+        "question": "Why is it important to use different passwords for different accounts?",
+        "options": [
+            "So you can remember them easily",
+            "To keep all your accounts safe if one gets hacked",
+            "Because websites require it",
+            "To make logging in faster"
+        ],
+        "answer": "To keep all your accounts safe if one gets hacked"
+    },
+    {
+        "id": 16,
+        "question": "What is the best way to keep your device's software secure?",
+        "options": [
+            "Never update it",
+            "Only update when you have problems",
+            "Install updates regularly",
+            "Delete old apps"
+        ],
+        "answer": "Install updates regularly"
+    },
+    {
+        "id": 17,
+        "question": "What is an example of personal information you should not share online?",
+        "options": [
+            "Your favorite movie",
+            "Your home address",
+            "Your favorite color",
+            "Your pet's name"
+        ],
+        "answer": "Your home address"
+    },
+    {
+        "id": 18,
+        "question": "What should you do if you think your account has been hacked?",
+        "options": [
+            "Ignore it",
+            "Change your password and tell a trusted adult",
+            "Keep using it as normal",
+            "Delete your account immediately"
+        ],
+        "answer": "Change your password and tell a trusted adult"
     }
 ]

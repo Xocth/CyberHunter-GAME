@@ -2,114 +2,279 @@
     {
         "id": 1,
         "question": "What is a strong password?",
-        "options": ["123456", "mypassword", "P@ssw0rd123!", "password123"],
-        "answer": "P@ssw0rd123!"
+        "options": ["All numbers", "A common word", "A mix of letters, numbers, and symbols", "Just your name and birth year"],
+        "answer": "A mix of letters, numbers, and symbols"
     },
     {
         "id": 2,
         "question": "What should you do if you get a message from someone you don't know?",
-        "options": ["Reply quickly", "Ignore it", "Tell a trusted adult", "Delete it immediately"],
-        "answer": "Tell a trusted adult"
+        "options": ["Reply right away", "Don't respond and consider telling someone you trust", "Send them your info", "Forward it to friends"],
+        "answer": "Don't respond and consider telling someone you trust"
     },
     {
         "id": 3,
         "question": "What does 'https' mean in a website URL?",
-        "options": ["It's a secure website", "It's a gaming site", "It's a chat site", "It's a random website"],
-        "answer": "It's a secure website"
+        "options": ["The site is protected", "It's for playing games", "It's a chat website", "It's just any website"],
+        "answer": "The site is protected"
     },
     {
         "id": 4,
         "question": "What should you do if a pop-up says you've won a prize?",
-        "options": ["Click on it", "Ignore it", "Share it with friends", "Close it immediately"],
-        "answer": "Close it immediately"
+        "options": ["Click to claim it", "Ignore or close it without clicking", "Tell your friends to try", "Share your details"],
+        "answer": "Ignore or close it without clicking"
     },
     {
         "id": 5,
         "question": "Which is the safest thing to share online?",
-        "options": ["Your full name", "Your favorite color", "Your home address", "Your school name"],
-        "answer": "Your favorite color"
+        "options": ["Your full name", "A favorite color", "Your address", "Your school name"],
+        "answer": "A favorite color"
     },
     {
         "id": 6,
         "question": "What should you do if a website asks for your password?",
         "options": [
-            "Give it if the site looks real",
-            "Ask a parent or teacher first",
-            "Ignore it",
-            "Make up a fake password"
+            "Give it if the site looks okay",
+            "Check with a parent or teacher first",
+            "Just ignore the request",
+            "Make up something random"
         ],
-        "answer": "Ask a parent or teacher first"
+        "answer": "Check with a parent or teacher first"
     },
     {
         "id": 7,
         "question": "What is a computer virus?",
         "options": [
-            "A type of software that causes harm",
-            "A game for computers",
-            "A strong password",
-            "A useful program"
+            "A harmful program",
+            "A fun computer game",
+            "A password type",
+            "A helpful tool"
         ],
-        "answer": "A type of software that causes harm"
+        "answer": "A harmful program"
     },
     {
         "id": 8,
         "question": "What should you do if someone online is being mean to you?",
         "options": [
-            "Ignore them",
-            "Be mean back",
-            "Tell a trusted adult",
-            "Keep chatting with them"
+            "Ignore them and don't reply",
+            "Be mean back to them",
+            "Tell someone you trust about it",
+            "Keep talking to them"
         ],
-        "answer": "Tell a trusted adult"
+        "answer": "Tell someone you trust about it"
     },
     {
         "id": 9,
         "question": "What does the padlock icon in the browser mean?",
         "options": [
-            "The website is secure",
-            "The website is offline",
-            "The website is locked",
-            "You need a password"
+            "The site is protected",
+            "The site is not available",
+            "The site is locked for you",
+            "You need to log in"
         ],
-        "answer": "The website is secure"
+        "answer": "The site is protected"
     },
     {
         "id": 10,
         "question": "What is the best way to protect your tablet or phone?",
         "options": [
-            "Leave it unlocked",
-            "Use a PIN or password",
-            "Share it with friends",
-            "Turn it off"
+            "Leave it open for anyone",
+            "Use a password or PIN",
+            "Let friends use it freely",
+            "Turn it off all the time"
         ],
-        "answer": "Use a PIN or password"
+        "answer": "Use a password or PIN"
     },
     {
         "id": 11,
         "question": "What is a username?",
         "options": [
             "Your real name",
-            "A name you create for online accounts",
-            "A website name",
-            "Your computer's name"
+            "A name you make up for online accounts",
+            "A website's name",
+            "Your device's name"
         ],
-        "answer": "A name you create for online accounts"
+        "answer": "A name you make up for online accounts"
     },
     {
         "id": 12,
         "question": "Who should you share your passwords with?",
-        "options": ["Your friends", "Your teacher", "Your family", "No one"],
-        "answer": "No one"
+        "options": ["Your friends", "Your teacher", "Your family", "No one else"],
+        "answer": "No one else"
     },
     {
         "id": 13,
         "question": "What should you do if your computer gets very slow suddenly?",
         "options": [
-            "Ignore it",
-            "Ask an adult to check for viruses",
-            "Turn it off and on again",
-            "Delete all your files"
+            "Ignore it and keep using it",
+            "Ask an adult to check for problems",
+            "Restart it and hope it works",
+            "Delete everything on it"
         ],
-        "answer": "Ask an adult to check for viruses"
+        "answer": "Ask an adult to check for problems"
+    },
+    {
+        "id": 14,
+        "question": "What should you do before downloading a new app?",
+        "options": [
+            "Download it right away",
+            "Check reviews and ask an adult",
+            "Click on any link you find",
+            "Ignore the app permissions"
+        ],
+        "answer": "Check reviews and ask an adult"
+    },
+    {
+        "id": 15,
+        "question": "Why is it important to log out of accounts on shared computers?",
+        "options": [
+            "So others can't access your information",
+            "Because it looks cool",
+            "To save battery",
+            "It's not important"
+        ],
+        "answer": "So others can't access your information"
+    },
+    {
+        "id": 16,
+        "question": "What should you do if you see something online that makes you uncomfortable?",
+        "options": [
+            "Keep it a secret",
+            "Tell a trusted adult",
+            "Share it with friends",
+            "Ignore it forever"
+        ],
+        "answer": "Tell a trusted adult"
+    },
+    {
+        "id": 17,
+        "question": "What is phishing?",
+        "options": [
+            "A way to catch fish",
+            "A trick to steal your information online",
+            "A type of computer game",
+            "A way to speed up your computer"
+        ],
+        "answer": "A trick to steal your information online"
+    },
+    {
+        "id": 18,
+        "question": "Which of these is a good way to keep your accounts safe?",
+        "options": [
+            "Use the same password everywhere",
+            "Change your passwords regularly",
+            "Tell your friends your passwords",
+            "Write your passwords on your desk"
+        ],
+        "answer": "Change your passwords regularly"
+    },
+    {
+        "id": 19,
+        "question": "What should you do if you forget your password?",
+        "options": [
+            "Try to guess many times",
+            "Use the 'forgot password' option",
+            "Ask a friend for their password",
+            "Stop using the account"
+        ],
+        "answer": "Use the 'forgot password' option"
+    },
+    {
+        "id": 20,
+        "question": "Why should you not share your location online?",
+        "options": [
+            "It can help strangers find you",
+            "It makes your device slow",
+            "It uses more battery",
+            "It is not interesting"
+        ],
+        "answer": "It can help strangers find you"
+    },
+    {
+        "id": 21,
+        "question": "What is the best way to check if a website is safe?",
+        "options": [
+            "Look for 'https' and a padlock icon",
+            "See if it loads quickly",
+            "Check if it has lots of pictures",
+            "Ask your friends"
+        ],
+        "answer": "Look for 'https' and a padlock icon"
+    },
+    {
+        "id": 22,
+        "question": "What should you do if someone asks for your personal information online?",
+        "options": [
+            "Give it to them",
+            "Ask a trusted adult before sharing",
+            "Share only your name",
+            "Ignore the question"
+        ],
+        "answer": "Ask a trusted adult before sharing"
+    },
+    {
+        "id": 23,
+        "question": "Why is it important to use a screen lock on your device?",
+        "options": [
+            "To keep your information private",
+            "To make your device look cool",
+            "To save battery",
+            "To get more apps"
+        ],
+        "answer": "To keep your information private"
+    },
+    {
+        "id": 24,
+        "question": "What should you do if you see a suspicious link in a message?",
+        "options": [
+            "Click it to see what happens",
+            "Show it to a trusted adult before clicking",
+            "Forward it to your friends",
+            "Ignore all messages"
+        ],
+        "answer": "Show it to a trusted adult before clicking"
+    },
+    {
+        "id": 25,
+        "question": "Why is it important to keep your software updated?",
+        "options": [
+            "To get the latest games",
+            "To fix security problems and bugs",
+            "To make your device heavier",
+            "To use more battery"
+        ],
+        "answer": "To fix security problems and bugs"
+    },
+    {
+        "id": 26,
+        "question": "What is personal information?",
+        "options": [
+            "Your favorite food",
+            "Your name, address, and phone number",
+            "A cartoon character",
+            "A type of computer"
+        ],
+        "answer": "Your name, address, and phone number"
+    },
+    {
+        "id": 27,
+        "question": "What should you do if someone online offers you free gifts?",
+        "options": [
+            "Give them your information",
+            "Ask a trusted adult before accepting",
+            "Accept right away",
+            "Send them money"
+        ],
+        "answer": "Ask a trusted adult before accepting"
+    },
+    {
+        "id": 28,
+        "question": "Why should you not use your real name as your username?",
+        "options": [
+            "It is too long",
+            "It can make it easier for strangers to find you",
+            "It is hard to spell",
+            "Websites don't allow it"
+        ],
+        "answer": "It can make it easier for strangers to find you"
     }
 ]

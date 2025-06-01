@@ -141,5 +141,60 @@
             "To share it with others"
         ],
         "answer": "To protect against data loss"
+    },
+    {
+        "id": 14,
+        "question": "What is a VPN used for?",
+        "options": [
+            "To create a secure connection over the internet",
+            "To speed up your Wi-Fi",
+            "To block ads",
+            "To update your computer"
+        ],
+        "answer": "To create a secure connection over the internet"
+    },
+    {
+        "id": 15,
+        "question": "What is the purpose of a firewall?",
+        "options": [
+            "To block unauthorized access to a network",
+            "To store passwords",
+            "To clean your computer",
+            "To make websites load faster"
+        ],
+        "answer": "To block unauthorized access to a network"
+    },
+    {
+        "id": 16,
+        "question": "What is the safest way to connect to public Wi-Fi?",
+        "options": [
+            "Use a VPN and avoid sensitive activities",
+            "Connect without any protection",
+            "Share files with others",
+            "Turn off your firewall"
+        ],
+        "answer": "Use a VPN and avoid sensitive activities"
+    },
+    {
+        "id": 17,
+        "question": "What is the main risk of using outdated software?",
+        "options": [
+            "It may have security vulnerabilities",
+            "It runs faster",
+            "It uses less memory",
+            "It is more fun to use"
+        ],
+        "answer": "It may have security vulnerabilities"
+    },
+    {
+        "id": 18,
+        "question": "What is the function of encryption?",
+        "options": [
+            "To protect data by making it unreadable without a key",
+            "To delete files automatically",
+            "To organize your folders",
+            "To speed up downloads"
+        ],
+        "answer": "To protect data by making it unreadable without a key"
     }
 ]
