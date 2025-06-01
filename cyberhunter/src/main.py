@@ -502,7 +502,7 @@ def quiz_game(screen, font, difficulty):
         pygame.event.clear()
     return score
 
-def quiz_result_screen(screen, font, correct_answers, current_score):
+def quiz_result_screen(screen, font, correct_answers, current_score, lore_text=None):
     screen.fill((0, 0, 0))
     result_text = font.render(f"You got {correct_answers} questions right!", True, (255, 255, 255))
     score_text = font.render(f"Current Score: {current_score}", True, (255, 255, 255))
@@ -515,6 +515,15 @@ def quiz_result_screen(screen, font, correct_answers, current_score):
     draw_text_with_outline(screen, f"You got {correct_answers} questions right!", font, (255, 255, 255), result_rect.left, result_rect.top)
     draw_text_with_outline(screen, f"Current Score: {current_score}", font, (255, 255, 255), score_rect.left, score_rect.top)
     draw_text_with_outline(screen, "Press RED to Continue", font, (255, 255, 255), continue_rect.left, continue_rect.top)
+
+    # Draw lore text if provided
+    if lore_text:
+        lore_lines = lore_text.split('\n')
+        for i, line in enumerate(lore_lines):
+            lore_render = font.render(line, True, (255, 255, 0))
+            lore_rect = lore_render.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 120 + i * 40))
+            draw_text_with_outline(screen, line, font, (255, 255, 0), lore_rect.left, lore_rect.top)
+
     pygame.display.flip()
 
     while True:
@@ -751,21 +760,27 @@ def game_loop(screen, road_image, selected_character_data, all_sprites, enemies,
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 1 quiz
+            lore = "Night falls over the city...\nBut the VIRUS Team's forces multiply in the shadows."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 2  # Return score and next level
 
         if level == 2 and score >= 1250:  # Next level screen at selected score for level 2
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 2 quiz
+            lore = "The city grows tense as you press on...\nThe VIRUS Team's grip tightens, but hope remains."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 3  # Return score and next level
 
         if level == 3 and score >= 2000:  # Next level screen at selected score for level 3
             next_level_screen(screen, font, difficulty)
             quiz_score = quiz_game(screen, font, difficulty)
             score += quiz_score * 50  # Add 50 points for each correct answer
-            quiz_result_screen(screen, font, quiz_score, score)
+            # Mini lore for after level 3 quiz
+            lore = "You approach the heart of the city...\nThe entrance to the VIRUS Team's lair looms ahead.\nTheir boss awaits your challenge."
+            quiz_result_screen(screen, font, quiz_score, score, lore_text=lore)
             return score, 4  # Return score and next level
 
         bullets.update()
